@@ -64,15 +64,26 @@ int main(int argc, char *argv[]) {
 
     while(1) {
         for (int pos = 0; pos < SIZE; pos++) {
-            setLed(pos, rand() % 256, rand() % 256, rand() % 256);
+            setLed(pos, 255, 0, 0);
+        }
+        update();
+        delay(5000);
+        for (int pos = 0; pos < SIZE; pos++) {
+            setLed(pos, 0, 255, 0);
+        }
+        update();
+        delay(5000);
+        for (int pos = 0; pos < SIZE; pos++) {
+            setLed(pos, 0, 0, 255);
         }
         update();
         delay(5000);
     }
-    return 0 ;
+    return 0;
 }
 
 pthread_t current;
+pthread_mutex_t lock;
 
 void update() {
     pthread_t next;
@@ -89,6 +100,7 @@ void *outputThread(LED data[]) {
     int pos = 0;
     while(1) {
         if (digitalRead(6)) printf("button pressed");
+        pthread_mutex_lock(&lock);
         sendStartFrame();
         for (int led = 0; led < SIZE; led++) {
             if (pos == led) {
@@ -98,6 +110,7 @@ void *outputThread(LED data[]) {
             }
         }
         sendEndFrame();
+        pthread_mutex_unlock(&lock);
         pos++;
         if (pos==SIZE) pos = 0;
         delay(500);
