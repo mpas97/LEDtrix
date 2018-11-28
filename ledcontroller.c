@@ -88,7 +88,7 @@ int main(int argc, char *argv[]) {
 }
 
 pthread_t current;
-pthread_mutex_t lock;
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 
 void update() {
     pthread_t next;
@@ -105,6 +105,7 @@ void *outputThread(LED data[]) {
     int pos = 0;
     while(1) {
         if (!digitalRead(BTPIN)) printf("button pressed\n");
+        pthread_cleanup_push((void *) pthread_mutex_unlock, (void *) &lock);
         pthread_mutex_lock(&lock);
         sendStartFrame();
         for (int led = 0; led < SIZE; led++) {
@@ -115,10 +116,10 @@ void *outputThread(LED data[]) {
             }
         }
         sendEndFrame();
-        pthread_mutex_unlock(&lock);
+        pthread_cleanup_pop(1);
         pos++;
         if (pos==SIZE) pos = 0;
-        delay(500);
+        //delay(500);
     }
 }
 
