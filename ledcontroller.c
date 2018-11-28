@@ -5,6 +5,9 @@
 #include <stdio.h>
 #include <pthread.h>
 
+// compile with
+// gcc -Wall leds.c -o leds -lwiringPi -lpthread
+
 #define BTPIN 6
 #define DIPIN 12
 #define CLPIN 14
