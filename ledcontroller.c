@@ -5,8 +5,10 @@
 #include <stdio.h>
 #include <pthread.h>
 
+#define BTPIN 6
 #define DIPIN 12
 #define CLPIN 14
+
 #define  SIZE 75
 #define LIGHT 15
 
@@ -35,8 +37,8 @@ int main(int argc, char *argv[]) {
     wiringPiSetup();
     pinMode(DIPIN, OUTPUT);
     pinMode(CLPIN, OUTPUT);
-    pinMode(6, INPUT);
-    pullUpDnControl(6, PUD_DOWN);
+    pinMode(BTPIN, INPUT);
+    pullUpDnControl(BTPIN, PUD_UP);
 
     time_t t;
     srand((unsigned) time(&t));
@@ -99,7 +101,7 @@ void update() {
 void *outputThread(LED data[]) {
     int pos = 0;
     while(1) {
-        if (digitalRead(6)) printf("button pressed");
+        if (!digitalRead(BTPIN)) printf("button pressed\n");
         pthread_mutex_lock(&lock);
         sendStartFrame();
         for (int led = 0; led < SIZE; led++) {
