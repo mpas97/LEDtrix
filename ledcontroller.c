@@ -115,7 +115,7 @@ void *outputThread(LED data[]) {
                 sendLedFrame(0, 0, 0);
             }
         }
-        sendEndFrame();
+        //sendEndFrame();
         pthread_cleanup_pop(1);
         pos++;
         if (pos==SIZE) pos = 0;
@@ -140,7 +140,7 @@ void sendStartFrame() {
 }
 
 void sendEndFrame() {
-    sendOnes(SIZE);
+    sendOnes(SIZE/2+1);
 }
 
 void sendLedFrame(int red, int green, int blue) {
