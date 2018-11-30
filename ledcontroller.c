@@ -12,7 +12,7 @@
 #define DIPIN 12
 #define CLPIN 14
 
-#define  SIZE 75
+#define  SIZE 60
 #define LIGHT 15
 
 typedef struct LED {
