@@ -91,11 +91,15 @@ int main(int argc, char **argv) {
 pthread_t current;
 pthread_mutex_t run = PTHREAD_MUTEX_INITIALIZER;
 
+/*
+ * Replaces the continuous led frame sending thread.
+ * So that the current colors will be visible.
+ */
 void update() {
     pthread_t next;
     // terminate the actual output thread
     pthread_cancel(current);
-    // create and run new thread only if old was cancelled
+    // block until the previous thread got cancelled
     pthread_mutex_lock(&run);
     // start a new output thread
     pthread_create(&next, NULL, (void *) outputThread, (void *) matrix);
@@ -104,6 +108,10 @@ void update() {
     current = next;
 }
 
+/*
+ * Sends a start frame, SIZE-times a LED frame followed by an end frame.
+ * This is repeated until the thread got cancelled.
+ */
 void *outputThread(uint32_t data[]) {
     pthread_cleanup_push((void *) pthread_mutex_unlock, (void *) &run);
         int pos = 0;
@@ -123,6 +131,9 @@ void *outputThread(uint32_t data[]) {
     pthread_cleanup_pop(1);
 }
 
+/*
+ * Changes the color of a specific LED.
+ */
 void setLed(int pos, uint8_t red, uint8_t green, uint8_t blue) {
     matrix[pos]  = 0x8F000000;
     matrix[pos] |= red;
@@ -130,34 +141,53 @@ void setLed(int pos, uint8_t red, uint8_t green, uint8_t blue) {
     matrix[pos] |= blue<<16;
 }
 
+/*
+ * Sets all LED matrix entries to the same color.
+ */
 void fill(uint8_t red, uint8_t green, uint8_t blue) {
     for (int pos = 0; pos < SIZE; pos++) {
         setLed(pos, red, green, blue);
     }
 }
 
+/*
+ * Sends all 32 bits of an unit32 param over GPIO.
+ * The order is from highest to lowest bit.
+ */
 void send_32_bits(uint32_t val) {
     for (int shift = 0; shift < 32; shift++) {
         GPIO_CLR = 1<<CLPIN;
         if (val&0x80000000)
-            GPIO_SET = 1 << DOPIN;
+            GPIO_SET = 1<<DOPIN;
         else
-            GPIO_CLR = 1 << DOPIN;
+            GPIO_CLR = 1<<DOPIN;
         GPIO_SET = 1<<CLPIN;
         val<<=1;
     }
 }
 
+/*
+ * Sends a start frame.
+ * This is at least a 32 bit long sequence of zeros.
+ */
 void sendStartFrame() {
     send_32_bits(0);
 }
 
+/*
+ * Sends an end frame.
+ * This is at least a (SIZE/2+1) bit long sequence of ones.
+ */
 void sendEndFrame() {
-    for (int i = 0; i <= (SIZE / 2 + 1) >> 5; i++) {
+    for (int i = 0; i <= (SIZE/2 + 1)>>5; i++) {
         send_32_bits(0xFFFFFFFF);
     }
 }
 
+/*
+ * Turns all LEDs off.
+ * Sends a start frame, SIZE-times an all zero LED frame followed by an end frame.
+ */
 void clear() {
     sendStartFrame();
     for (int led = 0; led < SIZE; led++) {
@@ -166,34 +196,34 @@ void clear() {
     sendEndFrame();
 }
 
-// Set up memory regions to access GPIO
+/*
+ * Sets up memory regions to access GPIO.
+ */
 void setup_io() {
-    /* open /dev/mem */
-    /*if ((mem_fd = open("/dev/mem", O_RDWR|O_SYNC) ) < 0) {
-        printf("can't open /dev/mem \n");
-        exit(-1);
-    }*/
 
-    // only access gpio memory space: safer & no sudo required
-    if ((mem_fd = open("/dev/gpiomem", O_RDWR|O_SYNC) ) < 0) {
-        printf("can't open /dev/gpiomem \n");
-        exit(-1);
+    // only access gpio memory space
+    if ((mem_fd = open("/dev/gpiomem", O_RDWR|O_SYNC)) < 0) {
+        // if failed, try to access whole memory space (requires sudo)
+        if ((mem_fd = open("/dev/mem", O_RDWR|O_SYNC)) < 0) {
+            printf("Can't open /dev/mem nor /dev/gpiomem. Try again with sudo!\n");
+            exit(-1);
+        }
     }
 
-    /* mmap GPIO */
+    // mmap GPIO
     gpio_map = mmap(
-            NULL,             //Any adddress in our space will do
-            BLOCK_SIZE,       //Map length
-            PROT_READ|PROT_WRITE,// Enable reading & writting to mapped memory
-            MAP_SHARED,       //Shared with other processes
-            mem_fd,           //File to map
-            GPIO_BASE         //Offset to GPIO peripheral
+            NULL,                // Any address in our space will do
+            BLOCK_SIZE,          // Map length
+            PROT_READ|PROT_WRITE,// Enable reading & writing to mapped memory
+            MAP_SHARED,          // Shared with other processes
+            mem_fd,              // File to map
+            GPIO_BASE            // Offset to GPIO peripheral
     );
 
-    close(mem_fd); //No need to keep mem_fd open after mmap
+    close(mem_fd); // No need to keep mem_fd open after mmap
 
     if (gpio_map == MAP_FAILED) {
-        printf("mmap error %d\n", (int)gpio_map);//errno also set!
+        printf("mmap error %d\n", (int)gpio_map); // errno also set!
         exit(-1);
     }
 
