@@ -118,14 +118,18 @@ void *outputThread(uint32_t data[]) {
         while (1) {
             sendStartFrame();
             for (int led = 0; led < SIZE; led++) {
-                if (pos == led) {
+                if (led == pos) {
                     send_32_bits(data[led]);
+                    send_32_bits(data[++led]);
+                    send_32_bits(data[++led]);
+                    send_32_bits(data[++led]);
+                    send_32_bits(data[++led]);
                 } else {
                     send_32_bits(0x80000000);
                 }
             }
-            pos++;
-            if (pos==SIZE) pos = 0;
+            pos += 5;
+            if (pos >= SIZE-4) pos = 0;
             pthread_testcancel();
         }
     pthread_cleanup_pop(1);
