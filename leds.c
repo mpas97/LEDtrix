@@ -10,8 +10,12 @@
 #define BLOCK_SIZE 4096
 #define GPIO_BASE 0x200000
 #define CLPIN 17
-#define DOPIN 27
-#define  SIZE 60
+#define C3PIN 4
+#define D1PIN 27
+#define D2PIN 22
+#define D3PIN 25
+#define SIZE 180
+#define BLOCK SIZE/3
 
 // compile: gcc leds.c -o leds -lpthread
 
@@ -42,7 +46,7 @@ void setLed(int pos, uint8_t red, uint8_t green, uint8_t blue);
 void setup_io();
 void sendStartFrame();
 void sendEndFrame();
-void send_32_bits(uint32_t val);
+void send_32_bits(uint32_t val1, uint32_t val2, uint32_t val3);
 void clear();
 void update();
 void *outputThread(uint32_t data[]);
@@ -60,10 +64,16 @@ int main(int argc, char **argv) {
     setup_io();
 
     // must use INP_GPIO before we can use OUT_GPIO
-    INP_GPIO(DOPIN);
-    OUT_GPIO(DOPIN);
+    INP_GPIO(D1PIN);
+    OUT_GPIO(D1PIN);
+    INP_GPIO(D2PIN);
+    OUT_GPIO(D2PIN);
+    INP_GPIO(D3PIN);
+    OUT_GPIO(D3PIN);
     INP_GPIO(CLPIN);
     OUT_GPIO(CLPIN);
+    INP_GPIO(C3PIN);
+    OUT_GPIO(C3PIN);
 
     if (argc == 2) {
         if (strcmp("clear", argv[1]) == 0) {
@@ -115,17 +125,21 @@ void update() {
 void *outputThread(uint32_t data[]) {
     pthread_cleanup_push((void *) pthread_mutex_unlock, (void *) &run);
         int pos = 0;
+        int led;
         while (1) {
             sendStartFrame();
-            for (int led = 0; led < SIZE; led++) {
-                if (pos == led) {
-                    send_32_bits(data[led]);
-                } else {
-                    send_32_bits(0x80000000);
-                }
+            for (led = 0; led < pos; led++) {
+                send_32_bits(0x80000000, 0x80000000, 0x80000000);
             }
-            pos++;
-            if (pos==SIZE) pos = 0;
+            send_32_bits(data[led], data[led+BLOCK], data[led+2*BLOCK]);
+            send_32_bits(data[++led], data[led+BLOCK], data[led+2*BLOCK]);
+            send_32_bits(data[++led], data[led+BLOCK], data[led+2*BLOCK]);
+            send_32_bits(data[++led], data[led+BLOCK], data[led+2*BLOCK]);
+            for (led++; led < BLOCK; led++) {
+                send_32_bits(0x80000000, 0x80000000, 0x80000000);
+            }
+            pos+=4;
+            if (pos>=BLOCK-3) pos = 0;
             pthread_testcancel();
         }
     pthread_cleanup_pop(1);
@@ -154,15 +168,27 @@ void fill(uint8_t red, uint8_t green, uint8_t blue) {
  * Sends all 32 bits of an unit32 param over GPIO.
  * The order is from highest to lowest bit.
  */
-void send_32_bits(uint32_t val) {
+void send_32_bits(uint32_t val1, uint32_t val2, uint32_t val3) {
     for (int shift = 0; shift < 32; shift++) {
-        GPIO_CLR = 1<<CLPIN;
-        if (val&0x80000000)
-            GPIO_SET = 1<<DOPIN;
+        GPIO_CLR = 1 << CLPIN;
+        if (val1 & 0x80000000)
+            GPIO_SET = 1 << D1PIN;
         else
-            GPIO_CLR = 1<<DOPIN;
-        GPIO_SET = 1<<CLPIN;
-        val<<=1;
+            GPIO_CLR = 1 << D1PIN;
+        if (val2 & 0x80000000)
+            GPIO_SET = 1 << D2PIN;
+        else
+            GPIO_CLR = 1 << D2PIN;
+        GPIO_SET = 1 << CLPIN;
+        GPIO_CLR = 1 << C3PIN;
+        if (val3 & 0x80000000)
+            GPIO_SET = 1 << D3PIN;
+        else
+            GPIO_CLR = 1 << D3PIN;
+        GPIO_SET = 1 << C3PIN;
+        val1 <<= 1;
+        val2 <<= 1;
+        val3 <<= 1;
     }
 }
 
@@ -171,7 +197,7 @@ void send_32_bits(uint32_t val) {
  * This is at least a 32 bit long sequence of zeros.
  */
 void sendStartFrame() {
-    send_32_bits(0);
+    send_32_bits(0, 0, 0);
 }
 
 /*
@@ -179,8 +205,8 @@ void sendStartFrame() {
  * This is at least a (SIZE/2+1) bit long sequence of ones.
  */
 void sendEndFrame() {
-    for (int i = 0; i <= (SIZE/2 + 1)>>5; i++) {
-        send_32_bits(0xFFFFFFFF);
+    for (int i = 0; i <= (BLOCK/2 + 1)>>5; i++) {
+        send_32_bits(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
     }
 }
 
@@ -190,8 +216,8 @@ void sendEndFrame() {
  */
 void clear() {
     sendStartFrame();
-    for (int led = 0; led < SIZE; led++) {
-        send_32_bits(0x80000000);
+    for (int led = 0; led < BLOCK; led++) {
+        send_32_bits(0x80000000, 0x80000000, 0x80000000);
     }
     sendEndFrame();
 }
