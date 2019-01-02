@@ -1,3 +1,6 @@
+#ifndef LEDTRIX_LEDS_H
+#define LEDTRIX_LEDS_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -6,8 +9,6 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "color.h"
-#include "tictactoe.h"
 
 #define BLOCK_SIZE 4096
 #define GPIO_BASE 0x200000
@@ -19,8 +20,6 @@
 #define SIZE 225
 #define BLOCK SIZE/3
 #define STRIP BLOCK/5
-
-// compile: gcc leds.c -o leds -lpthread
 
 int mem_fd;
 void *gpio_map;
@@ -49,7 +48,7 @@ void fill(uint8_t red, uint8_t green, uint8_t blue, struct color leds[STRIP][STR
 
 void setLed(int pos, uint8_t red, uint8_t green, uint8_t blue);
 
-void setLedMatrix(int xpos, int ypos,uint8_t red, uint8_t green, uint8_t blue, struct color leds[STRIP][STRIP]);
+void setLedMatrix(int xpos, int ypos, uint8_t red, uint8_t green, uint8_t blue, struct color leds[STRIP][STRIP]);
 
 void setup_io();
 
@@ -60,8 +59,6 @@ void send_32_bits(uint32_t val1, uint32_t val2, uint32_t val3);
 void clear(struct color leds[STRIP][STRIP]);
 
 void test(struct color leds[STRIP][STRIP]);
-
-void tictactoe(struct color leds[STRIP[STRIP]])
 
 void update();
 
@@ -74,41 +71,6 @@ void printButton(int g) {
         printf("Button pressed!\n");
     else // port is LOW=0V
         printf("Button released!\n");
-}
-
-int main(int argc, char **argv) {
-
-    // Set up gpio pointer for direct register access
-    setup_io();
-
-    // must use INP_GPIO before we can use OUT_GPIO
-    INP_GPIO(D1PIN);
-    OUT_GPIO(D1PIN);
-    INP_GPIO(D2PIN);
-    OUT_GPIO(D2PIN);
-    INP_GPIO(D3PIN);
-    OUT_GPIO(D3PIN);
-    INP_GPIO(CLPIN);
-    OUT_GPIO(CLPIN);
-    INP_GPIO(C3PIN);
-    OUT_GPIO(C3PIN);
-
-    // matrix for te leds
-    struct color leds[STRIP][STRIP];
-
-    // clear all leds, so the matrix is initialized
-    clear(leds);
-
-    if (argc == 2) {
-        if (strcmp("clear", argv[1]) == 0) return 0;
-    }
-
-
-
-    test(leds);
-
-    return 0;
-
 }
 
 /**
@@ -176,7 +138,7 @@ void *outputThread(uint32_t data[]) {
             send_32_bits(data[led], data[led + BLOCK], data[led + 2 * BLOCK]);
             send_32_bits(data[++led], data[led + BLOCK], data[led + 2 * BLOCK]);
             send_32_bits(data[++led], data[led + BLOCK], data[led + 2 * BLOCK]);
-            send_32_bits(data[++led], data[led+BLOCK], data[led+2*BLOCK]);
+            send_32_bits(data[++led], data[led + BLOCK], data[led + 2 * BLOCK]);
             for (led++; led < BLOCK; led++) {
                 send_32_bits(0x80000000, 0x80000000, 0x80000000);
             }
@@ -188,8 +150,8 @@ void *outputThread(uint32_t data[]) {
     pthread_cleanup_pop(1);
 }
 
-void setLedMatrix(int xpos, int ypos,uint8_t red, uint8_t green, uint8_t blue, struct color leds[STRIP][STRIP]) {
-    setColor(leds[x][y].red, red, green, blue);
+void setLedMatrix(int xpos, int ypos, uint8_t red, uint8_t green, uint8_t blue, struct color leds[STRIP][STRIP]) {
+    setColor(leds[x][y], red, green, blue);
 }
 
 /**
@@ -227,14 +189,14 @@ void updateMatrix(struct color leds[STRIP][STRIP]) {
     update();
 }
 
- /**
-  * Changes the color of a specific LED.
-  *
-  * @param pos of the led
-  * @param red
-  * @param green
-  * @param blue
-  */
+/**
+ * Changes the color of a specific LED.
+ *
+ * @param pos of the led
+ * @param red
+ * @param green
+ * @param blue
+ */
 void setLed(int pos, uint8_t red, uint8_t green, uint8_t blue) {
     matrix[pos] = 0x8F000000;
     matrix[pos] |= red;
@@ -361,3 +323,5 @@ void setup_io() {
     gpio = (volatile unsigned *) gpio_map;
 
 }
+
+#endif //LEDTRIX_LEDS_H

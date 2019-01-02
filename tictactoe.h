@@ -3,7 +3,6 @@
 
 #include <stdbool.h>
 #include <pthread.h>
-#include "color.h"
 
 #define FIELD (STRIP/3)
 #define END (FIELD -1)
@@ -154,10 +153,12 @@ void startTictactoe(struct color leds[STRIP][STRIP]) {
         while (choosing) {
             //TODO: if right button pushed
             nextField(pos);
+            updateMatrix(leds);
             //TODO: if left button pushed
             choosing = false;
         }
         selectField(pos);
+        updateMatrix(leds);
         running = checkStatus();
     }
 }
