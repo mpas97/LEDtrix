@@ -11,6 +11,7 @@ bool turnPlayer1 = true;
 bool playing = true;
 char stateOfField[9] = {0};
 int pos = 8;
+int winner = 0;
 struct color colorPlayer1;
 struct color colorPlayer1Def;
 struct color colorPlayer2;
@@ -124,12 +125,38 @@ void selectField(int pos) {
  * @return
  */
 bool checkStatus() {
-    for (int i = 0; i < 9; i++){
-        if (stateOfField[i] == 0)
+    if (stateOfField[4] != 0) {
+        // middle row || middle column || first diagonal || second diagonal
+        if ((stateOfField[4] == stateOfField[3] && stateOfFiel[4] == stateOfField[5]) ||
+            (stateOfField[4] == stateOfField[1] && stateOfFiel[4] == stateOfField[7]) ||
+            (stateOfField[4] == stateOfField[0] && stateOfFiel[4] == stateOfField[8]) ||
+            (stateOfField[4] == stateOfField[6] && stateOfFiel[4] == stateOfField[2])) {
+            winner = state[0];
+            return false;
+        }
+    }
+    if (stateOfField[0] != 0) {
+        // first row || first column
+        if ((stateOfField[0] == stateOfField[1] && stateOfFiel[1] == stateOfField[2]) ||
+            (stateOfField[0] == stateOfField[3] && stateOfFiel[0] == stateOfField[6])) {
+            winner = stateOfField[0];
+            return false;
+        }
+    }
+    if (stateOfField[8] != 0) {
+        // last row || last column
+        if ((stateOfField[8] == stateOfField[6] && stateOfFiel[8] == stateOfField[2]) ||
+            (stateOfField[8] == stateOfField[2] && stateOfFiel[8] == stateOfField[5])) {
+            winner = stateOfField[0];
+            return false;
+        }
+    }
+    //everything full, no winner
+    for(int i = 0; i < 9; i++) {
+        if (state[i] == 0)
             return true;
     }
-    //TODO: kontrolliere ob jemand gewonnen?
-    return false;
+    return true;
 }
 
 /**
