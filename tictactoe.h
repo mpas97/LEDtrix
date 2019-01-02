@@ -2,7 +2,9 @@
 #define LEDTRIX_TICTACTOE_H
 
 #include <stdbool.h>
-#include <pthread.h>
+#include "color.h" //TODO: remove
+#include "leds.h" //TODO: remove
+
 
 #define FIELD (STRIP/3)
 #define END (FIELD -1)
@@ -16,6 +18,8 @@ struct color colorPlayer1;
 struct color colorPlayer1Def;
 struct color colorPlayer2;
 struct color colorPlayer2Def;
+struct color leds[STRIP][STRIP]; //TODO: remove
+
 
 int getCol(int pos) {
     return pos % 3 * FIELD;
@@ -85,9 +89,6 @@ void changePlayer() {
  * @param pos old position of the selector
  */
 void nextField(pos) {
-    int x = getCol(pos);
-    int y = getRow(pos);
-
     if (stateOfField == 0)
         emptyField(pos);
 
@@ -108,8 +109,6 @@ void nextField(pos) {
  * @param pos of the field
  */
 void selectField(int pos) {
-    int x = getCol(pos);
-    int y = getRow(pos);
     if (turnPlayer1) {
         drawCross(pos, colorPlayer1Def);
         stateOfField[pos] = 1;

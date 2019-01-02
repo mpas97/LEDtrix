@@ -4,7 +4,7 @@
 #include "color.h"
 #include "leds.h"
 #include "tictactoe.h"
-//#include "raindrops.h"
+#include "raindrops.h"
 
 // compile: gcc LEDtrix.c -o LEDtrix -lpthread
 
@@ -33,12 +33,18 @@ int main(int argc, char **argv) {
     // clear all leds, so the matrix is initialized
     clear(leds);
 
+    //TODO: Spiel auswählen mit rechtem knopf (=blättern), mit linkem bestätigen.
+    // wenn spiel verlore, zurück zu aswahl (auf diesem Spiel stehen bleiben
     if (argc == 2) {
         if (strcmp("clear", argv[1]) == 0){
             return 0;
         }
         if (strcmp("ttt", argv[1]) == 0) {
             startTictactoe(leds);
+            return 0;
+        }
+        if (strcmp("rd", argv[1]) == 0) {
+            startRaindrops(leds);
             return 0;
         }
     }
