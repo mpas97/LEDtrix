@@ -49,7 +49,9 @@ void fill(uint8_t red, uint8_t green, uint8_t blue, struct color leds[STRIP][STR
 
 void setLed(int pos, uint8_t red, uint8_t green, uint8_t blue);
 
-void setLedMatrix(int xpos, int ypos, uint8_t red, uint8_t green, uint8_t blue, struct color leds[STRIP][STRIP]);
+void setLedsRGB(int xpos, int ypos, uint8_t red, uint8_t green, uint8_t blue, struct color leds[STRIP][STRIP]);
+
+void setLedsColor(int xpos, int ypos, struct color col, struct color leds[STRIP][STRIP]);
 
 void setup_io();
 
@@ -80,6 +82,7 @@ void printButton(int g) {
  * @param leds the matrix
  */
 void test(struct color leds[STRIP][STRIP]) {
+
     while (1) {
         clear(leds);
         for (int y = 0; y < STRIP; y++) {
@@ -149,8 +152,30 @@ void *outputThread(uint32_t data[]) {
     pthread_cleanup_pop(1);
 }
 
-void setLedMatrix(int xpos, int ypos, uint8_t red, uint8_t green, uint8_t blue, struct color leds[STRIP][STRIP]) {
-    setColor(leds[xpos][ypos], red, green, blue);
+/**
+ * Set the Color of the led on this position (x/y).
+ * @param xpos
+ * @param ypos
+ * @param red value
+ * @param green value
+ * @param blue value
+ * @param leds the matrix of leds
+ */
+void setLedsRGB(int xpos, int ypos, uint8_t red, uint8_t green, uint8_t blue, struct color leds[STRIP][STRIP]) {
+    leds[xpos][ypos].red = red;
+    leds[xpos][ypos].green = green;
+    leds[xpos][ypos].blue = blue;
+}
+
+/**
+ * Set the Color of the led on this position (x/y).
+ * @param xpos
+ * @param ypos
+ * @param col of this led
+ * @param leds the matrix of leds
+ */
+void setLedsColor(int xpos, int ypos, struct color col, struct color leds[STRIP][STRIP]) {
+    leds[xpos][ypos] = col;
 }
 
 /**
@@ -232,11 +257,14 @@ void clear(struct color leds[STRIP][STRIP]) {
     sendStartFrame();
     for (int y = 0; y < STRIP; y++) {
         for (int x = 0; x < STRIP; x++) {
-            setColor(leds[x][y], 0, 0, 0);
+            leds[x][y].red = 0;
+            leds[x][y].green = 0;
+            leds[x][y].blue = 0;
         }
     }
+    printf("cleared");
     updateMatrix(leds);
-    sleep(3);
+    //sleep(3);
 }
 
 /**

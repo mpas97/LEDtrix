@@ -11,18 +11,16 @@ struct color colorFail;
 struct color colPlayer;
 struct color colorDrop;
 
-struct color leds[STRIP][STRIP]; //TODO: remove
-
 /**
  * Draw and print the field with the player.
  *
  * @param color the color of the player
  */
-void drawPlayer(struct color col) {
-    setLedMatrix(player, STRIP - 1, col.red, col.green, col.blue);
-    setLedMatrix(player + 1, STRIP - 1, col.red, col.green, col.blue);
-    setLedMatrix(player, STRIP - 2, col.red, col.green, col.blue);
-    setLedMatrix(player + 1, STRIP - 2, col.red, col.green, col.blue);
+void drawPlayer(struct color col, struct color leds[STRIP][STRIP]) {
+    setLedsColor(player, STRIP - 1, col, leds);
+    setLedsColor(player + 1, STRIP - 1, col, leds);
+    setLedsColor(player, STRIP - 2, col, leds);
+    setLedsColor(player + 1, STRIP - 2, col, leds);
     updateMatrix(leds);
 }
 
@@ -37,14 +35,14 @@ void endGame() {
 /**
  * Control the position of the player using his upper left position.
  */
-bool control() {
+bool control(struct color leds[STRIP][STRIP]) {
     if (raindrops[player][STRIP - 1] || raindrops[player + 1][STRIP - 1] ||
         raindrops[player][STRIP - 2] || raindrops[player + 1][STRIP - 2]) {
         endGame();
-        drawPlayer(colorFail);
+        drawPlayer(colorFail, leds);
         return false;
     }
-    drawPlayer(colPlayer);
+    drawPlayer(colPlayer, leds);
     return true;
 }
 
@@ -52,27 +50,27 @@ bool control() {
  * Move each row one row down and create a new one.
  * The chance of having a raindrop is 1/3 per field, there are always two free fields next to eachother.
  */
-void rain() {
+void rain(struct color leds[STRIP][STRIP]) {
     for (int y = STRIP - 1; y > 0; y--) {
         for (int x = 0; x < STRIP; x++) {
             raindrops[x][y] = raindrops[x][y - 1];
             if (raindrops[x][y])
-                setLedMatrix(x, y, colorDrop.red, colorDrop.green, colorDrop.blue, leds);
+                setLedsColor(x, y, colorDrop, leds);
             else
-                setLedMatrix(x, y, 0, 0, 0, leds);
+                setLedsRGB(x, y, 0, 0, 0, leds);
         }
     }
     for (int i = 0; i < STRIP; i++) {
         int color = rand() % 3;
         if (color == 2) {
             raindrops[i][0] = true;
-            setLedMatrix(i, 0, colorDrop.red, colorDrop.green, colorDrop.blue, leds);
+            setLedsColor(i, 0, colorDrop, leds);
 
         } else {
             raindrops[i][0] = false;
-            setLedMatrix(i, 0, 0, 0, 0, leds);
+            setLedsRGB(i, 0, 0, 0, 0, leds);
             raindrops[++i][0] = false;
-            setLedMatrix(i, 0, 0, 0, 0, leds);
+            setLedsRGB(i, 0, 0, 0, 0, leds);
 
         }
     }
@@ -81,10 +79,10 @@ void rain() {
 /**
  * Move the player one to the left using his uppper left position.
  */
-void moveLeft() {
+void moveLeft(struct color leds[STRIP][STRIP]) {
     if (player > 0) {
-        setLedMatrix(player + 1, STRIP - 1, 0, 0, 0, leds);
-        setLedMatrix(player + 1, STRIP - 2, 0, 0, 0, leds);
+        setLedsRGB(player + 1, STRIP - 1, 0, 0, 0, leds);
+        setLedsRGB(player + 1, STRIP - 2, 0, 0, 0, leds);
         player -= 1;
     }
 }
@@ -92,33 +90,33 @@ void moveLeft() {
 /**
  * Move the player one to the right using his uppper left position.
  */
-void moveRight() {
+void moveRight(struct color leds[STRIP][STRIP]) {
     if (player < STRIP - 2) {
-        setLedMatrix(player, STRIP - 1, 0, 0, 0, leds);
-        setLedMatrix(player, STRIP - 2, 0, 0, 0, leds);
+        setLedsRGB(player, STRIP - 1, 0, 0, 0, leds);
+        setLedsRGB(player, STRIP - 2, 0, 0, 0, leds);
         player += 1;
     }
 }
 
-int startRaindrops() {
+int startRaindrops(struct color leds[STRIP][STRIP]) {
     setColor(colorFail, 205, 51, 51);
     setColor(colPlayer, 34, 139, 34);
     setColor(colorDrop, 47, 79, 79);
 
     player = STRIP / 2 - 1;
-    drawPlayer(colPlayer);
+    drawPlayer(colPlayer, leds);
 
     bool running = true;
 
     while (running) {
         //TODO: if left button: move left, if right button: move right, rain zeit?
-        rain();
-        control();
-        moveLeft();
-        control();
-        moveRight();
-        control();
-        running = control();
+        rain(leds);
+        control(leds);
+        moveLeft(leds);
+        control(leds);
+        moveRight(leds);
+        control(leds);
+        running = control(leds);
     }
 
     return 0;

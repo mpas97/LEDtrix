@@ -18,15 +18,13 @@ struct color colorPlayer1;
 struct color colorPlayer1Def;
 struct color colorPlayer2;
 struct color colorPlayer2Def;
-struct color leds[STRIP][STRIP]; //TODO: remove
-
 
 int getCol(int pos) {
     return pos % 3 * FIELD;
 }
 
 int getRow(int pos) {
-    return pos / 3 * FIELD
+    return pos / 3 * FIELD;
 }
 
 /**
@@ -34,15 +32,15 @@ int getRow(int pos) {
  * @param pos of the field
  * @param col which to paint it in
  */
-void drawCross(int pos, struct color col) {
+void drawCross(int pos, struct color col, struct color leds[STRIP][STRIP]) {
     int x = getCol(pos);
-    int y = getROW(pos);
+    int y = getRow(pos);
     for (int i = BLOCK / 2; i >= 0; i--) {
         int e = END - i;
-        setLedMatrix(x + i, y + i, col.red, col.green, col.blue);
-        setLedMatrix(x + i, y + e, col.red, col.green, col.blue);
-        setLedMatrix(x + e, y + e, col.red, col.green, col.blue);
-        setLedMatrix(x + e, y + i, col.red, col.green, col.blue);
+        setLedsColor(x + i, y + i, col, leds);
+        setLedsColor(x + i, y + e, col, leds);
+        setLedsColor(x + e, y + e, col, leds);
+        setLedsColor(x + e, y + i, col, leds);
     }
 }
 
@@ -51,14 +49,14 @@ void drawCross(int pos, struct color col) {
  * @param pos of the field
  * @param col which to paint it in
  */
-void drawCircle(int pos, struct color col) {
+void drawCircle(int pos, struct color col, struct color leds[STRIP][STRIP]) {
     int x = getCol(pos);
     int y = getRow(pos);
     for (int i = END - 1; i > 0; i--) {
-        setLedMatrix(x, y + i, col.red, col.green, col.blue);
-        setLedMatrix(x + END, y + i, col.red, col.green, col.blue);
-        setLedMatrix(x + i, y, col.red, col.green, col.blue);
-        setLedMatrix(x + i, y + END, col.red, col.green, col.blue);
+        setLedsColor(x, y + i, col, leds);
+        setLedsColor(x + END, y + i, col, leds);
+        setLedsColor(x + i, y, col, leds);
+        setLedsColor(x + i, y + END, col, leds);
     }
 }
 
@@ -67,12 +65,12 @@ void drawCircle(int pos, struct color col) {
  *
  * @param pos of the field
  */
-void emptyField(int pos) {
+void emptyField(int pos, struct color leds[STRIP][STRIP]) {
     int x = getCol(pos);
     int y = getRow(pos);
     for (int i = x - FIELD / 2; i > x + FIELD / 2; i++) {
         for (int j = y - FIELD / 2; j > y + FIELD / 2; j++)
-            setLedMatric(x, y, 0, 0, 0);
+            setLedsRGB(x, y, 0, 0, 0, leds);
     }
 }
 
@@ -80,7 +78,7 @@ void emptyField(int pos) {
  * change the boolean so its the next players turn.
  */
 void changePlayer() {
-    playerX = !playerX;
+    turnPlayer1 = !turnPlayer1;
 }
 
 /**
@@ -88,19 +86,19 @@ void changePlayer() {
  *
  * @param pos old position of the selector
  */
-void nextField(pos) {
+void nextField(int pos, struct color leds[STRIP][STRIP]) {
     if (stateOfField == 0)
-        emptyField(pos);
+        emptyField(pos, leds);
 
     do {
         pos++;
         if (pos >= 9) pos = 0;
-    } while (stateOfField[pos] != 0)
+    } while (stateOfField[pos] != 0);
 
     if (turnPlayer1)
-        drawCircle(pos, colorPlayer1);
+        drawCircle(pos, colorPlayer1, leds);
     else
-        drawCross(pos, colorPlayer2);
+        drawCross(pos, colorPlayer2, leds);
 }
 
 /**
@@ -108,12 +106,12 @@ void nextField(pos) {
  *
  * @param pos of the field
  */
-void selectField(int pos) {
+void selectField(int pos, struct color leds[STRIP][STRIP]) {
     if (turnPlayer1) {
-        drawCross(pos, colorPlayer1Def);
+        drawCross(pos, colorPlayer1Def, leds);
         stateOfField[pos] = 1;
     } else {
-        drawCircle(pos, colorPlayer2Def);
+        drawCircle(pos, colorPlayer2Def, leds);
         stateOfField[pos] = 2;
     }
     changePlayer();
@@ -126,33 +124,33 @@ void selectField(int pos) {
 bool checkStatus() {
     if (stateOfField[4] != 0) {
         // middle row || middle column || first diagonal || second diagonal
-        if ((stateOfField[4] == stateOfField[3] && stateOfFiel[4] == stateOfField[5]) ||
-            (stateOfField[4] == stateOfField[1] && stateOfFiel[4] == stateOfField[7]) ||
-            (stateOfField[4] == stateOfField[0] && stateOfFiel[4] == stateOfField[8]) ||
-            (stateOfField[4] == stateOfField[6] && stateOfFiel[4] == stateOfField[2])) {
-            winner = state[0];
+        if ((stateOfField[4] == stateOfField[3] && stateOfField[4] == stateOfField[5]) ||
+            (stateOfField[4] == stateOfField[1] && stateOfField[4] == stateOfField[7]) ||
+            (stateOfField[4] == stateOfField[0] && stateOfField[4] == stateOfField[8]) ||
+            (stateOfField[4] == stateOfField[6] && stateOfField[4] == stateOfField[2])) {
+            winner = stateOfField[4];
             return false;
         }
     }
     if (stateOfField[0] != 0) {
         // first row || first column
-        if ((stateOfField[0] == stateOfField[1] && stateOfFiel[1] == stateOfField[2]) ||
-            (stateOfField[0] == stateOfField[3] && stateOfFiel[0] == stateOfField[6])) {
+        if ((stateOfField[0] == stateOfField[1] && stateOfField[1] == stateOfField[2]) ||
+            (stateOfField[0] == stateOfField[3] && stateOfField[0] == stateOfField[6])) {
             winner = stateOfField[0];
             return false;
         }
     }
     if (stateOfField[8] != 0) {
         // last row || last column
-        if ((stateOfField[8] == stateOfField[6] && stateOfFiel[8] == stateOfField[2]) ||
-            (stateOfField[8] == stateOfField[2] && stateOfFiel[8] == stateOfField[5])) {
-            winner = stateOfField[0];
+        if ((stateOfField[8] == stateOfField[6] && stateOfField[8] == stateOfField[2]) ||
+            (stateOfField[8] == stateOfField[2] && stateOfField[8] == stateOfField[5])) {
+            winner = stateOfField[8];
             return false;
         }
     }
     //everything full, no winner
     for(int i = 0; i < 9; i++) {
-        if (state[i] == 0)
+        if (stateOfField[i] == 0)
             return true;
     }
     return true;
@@ -171,19 +169,19 @@ void startTictactoe(struct color leds[STRIP][STRIP]) {
     setColor(colorPlayer2, 30, 144, 255);
     setColor(colorPlayer2Def, 0, 0, 255);
 
-    boolean running;
-    boolean choosing;
+    bool running;
+    bool choosing;
 
     while (running) {
         choosing = true;
         while (choosing) {
             //TODO: if right button pushed
-            nextField(pos);
+            nextField(pos, leds);
             updateMatrix(leds);
             //TODO: if left button pushed
             choosing = false;
         }
-        selectField(pos);
+        selectField(pos, leds);
         updateMatrix(leds);
         running = checkStatus();
     }

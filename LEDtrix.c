@@ -34,9 +34,10 @@ int main(int argc, char **argv) {
     clear(leds);
 
     //TODO: Spiel auswählen mit rechtem knopf (=blättern), mit linkem bestätigen.
-    // wenn spiel verlore, zurück zu aswahl (auf diesem Spiel stehen bleiben
+    // wenn spiel verloren, zurück zu auswahl (auf diesem Spiel stehen bleiben)
     if (argc == 2) {
         if (strcmp("clear", argv[1]) == 0){
+            printf("clear");
             return 0;
         }
         if (strcmp("ttt", argv[1]) == 0) {

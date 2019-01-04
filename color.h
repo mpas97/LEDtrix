@@ -1,7 +1,8 @@
+
+#include <stdint.h>
+
 #ifndef LEDTRIX_COLOR_H
 #define LEDTRIX_COLOR_H
-
-#endif //LEDTRIX_COLOR_H
 
 struct color{
     uint8_t red;
@@ -14,3 +15,5 @@ void setColor(struct color col, uint8_t red, uint8_t green, uint8_t blue) {
     col.green = green;
     col.blue = blue;
 }
+
+#endif //LEDTRIX_COLOR_H
