@@ -1,7 +1,6 @@
 #ifndef LEDTRIX_LEDS_H
 #define LEDTRIX_LEDS_H
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -43,6 +42,7 @@ volatile unsigned *gpio;
 #define GPIO_PULL *(gpio+37) // Pull up/pull down
 #define GPIO_PULLCLK0 *(gpio+38) // Pull up/pull down clock
 
+struct color leds[STRIP][STRIP]
 uint32_t matrix[SIZE];
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -50,10 +50,9 @@ void fill(uint8_t red, uint8_t green, uint8_t blue, struct color leds[STRIP][STR
 
 void setLed(int pos, uint8_t red, uint8_t green, uint8_t blue);
 
-//void setLedsRGB(int xpos, int ypos, uint8_t red, uint8_t green, uint8_t blue, struct color leds[STRIP][STRIP]);
+void setLedsRGB(int xpos, int ypos, uint8_t red, uint8_t green, uint8_t blue);
 
-//void setLedsColor(int xpos, int ypos, struct color col, struct color leds[STRIP][STRIP]);
-//TODO
+void setLedsColor(int xpos, int ypos, struct color col);
 
 void setup_io();
 
@@ -62,6 +61,8 @@ void sendStartFrame();
 void send_32_bits(uint32_t val1, uint32_t val2, uint32_t val3);
 
 void clear(struct color leds[STRIP][STRIP]);
+
+void test(struct color leds[STRIP][STRIP]);
 
 void update();
 
@@ -76,7 +77,12 @@ void printButton(int g) {
         printf("Button released!\n");
 }
 
-void test(struct color leds[STRIP][STRIP]){
+/**
+ * Method for testing if x / y are displayed correct
+ *
+ * @param leds the matrix
+ */
+void test(struct color leds[STRIP][STRIP]) {
     for (int y = 0; y < STRIP; y++) {
         for (int x = 0; x < STRIP; x++) {
             leds[x][y].red = 15 * y;
@@ -105,7 +111,6 @@ void test(struct color leds[STRIP][STRIP]){
                 leds[x][y].green = 50;
                 leds[x][y].blue = 255 - 15 * y - 1;
                 updateMatrix(leds);
-                sleep(1);
             }
         }
         clear(leds);
@@ -115,7 +120,6 @@ void test(struct color leds[STRIP][STRIP]){
                 leds[x][y].red = 50;
                 leds[x][y].blue = 255 - 15 * x - 1;
                 updateMatrix(leds);
-                sleep(1);
             }
         }
     }
@@ -160,7 +164,7 @@ void *outputThread(uint32_t data[]) {
             send_32_bits(data[led], data[led + BLOCK], data[led + 2 * BLOCK]);
             send_32_bits(data[++led], data[led + BLOCK], data[led + 2 * BLOCK]);
             send_32_bits(data[++led], data[led + BLOCK], data[led + 2 * BLOCK]);
-            send_32_bits(data[++led], data[led+BLOCK], data[led+2*BLOCK]);
+            send_32_bits(data[++led], data[led + BLOCK], data[led + 2 * BLOCK]);
             for (led++; led < BLOCK; led++) {
                 send_32_bits(0x80000000, 0x80000000, 0x80000000);
             }
@@ -177,7 +181,6 @@ void *outputThread(uint32_t data[]) {
  *
  * @param leds the matrix
  */
-
 void updateMatrix(struct color leds[STRIP][STRIP]) {
     for (int i = 0; i < STRIP; i++) {
         //(x,y) = (0,0) is upper left corner
@@ -224,6 +227,32 @@ void setLed(int pos, uint8_t red, uint8_t green, uint8_t blue) {
 }
 
 /**
+* Set the Color of the led on this position (x/y).
+* @param xpos
+* @param ypos
+* @param red value
+* @param green value
+* @param blue value
+*/
+void setLedsRGB(int xpos, int ypos, uint8_t red, uint8_t green, uint8_t blue) {
+    leds[xpos][ypos].red = red;
+    leds[xpos][ypos].green = green;
+    leds[xpos][ypos].blue = blue;
+}
+
+/**
+ * Set the Color of the led on this position (x/y).
+ * @param xpos
+ * @param ypos
+ * @param col of this led
+ */
+void setLedsColor(int xpos, int ypos, struct color col) {
+    leds[xpos][ypos] = col;
+}
+
+
+
+/**
  * Sets all LED matrix entries to the same color.
  *
  * @param red
@@ -241,14 +270,13 @@ void fill(uint8_t red, uint8_t green, uint8_t blue, struct color leds[STRIP][STR
         }
     }
     updateMatrix(leds);
-    sleep(3);
 }
 
 /**
-* Turns all LEDs off.
-* Sends a start frame, SIZE-times an all zero LED frame followed by an end frame.
-*
-* @param leds
+ * Turns all LEDs off.
+ * Sends a start frame, SIZE-times an all zero LED frame followed by an end frame.
+ *
+ * @param leds
 */
 void clear(struct color leds[STRIP][STRIP]) {
     sendStartFrame();
@@ -260,7 +288,7 @@ void clear(struct color leds[STRIP][STRIP]) {
         }
     }
     updateMatrix(leds);
-    sleep(3);
+    sleep(1);
 }
 
 /**
@@ -348,4 +376,3 @@ void setup_io() {
 }
 
 #endif //LEDTRIX_LEDS_H
-
