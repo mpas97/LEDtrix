@@ -1,16 +1,16 @@
 //
 // Created by salom on 02.01.2019.
 //
-#include "color.h"
+//#include "color.h"
 #include "leds.h"
-#include "tictactoe.h"
-#include "raindrops.h"
+//#include "tictactoe.h"
+//#include "raindrops.h"
 
 // compile: gcc LEDtrix.c -o LEDtrix -lpthread
 
 
 
-int main(int argc, char **argv) {
+/**int main(int argc, char **argv) {
 
     // Set up gpio pointer for direct register access
     setup_io();
@@ -51,6 +51,92 @@ int main(int argc, char **argv) {
     }
 
     test(leds);
+
+    return 0;
+
+}
+**/
+
+int main(int argc, char **argv) {
+
+    // Set up gpio pointer for direct register access
+    setup_io();
+
+    // must use INP_GPIO before we can use OUT_GPIO
+    INP_GPIO(D1PIN);
+    OUT_GPIO(D1PIN);
+    INP_GPIO(D2PIN);
+    OUT_GPIO(D2PIN);
+    INP_GPIO(D3PIN);
+    OUT_GPIO(D3PIN);
+    INP_GPIO(CLPIN);
+    OUT_GPIO(CLPIN);
+    INP_GPIO(C3PIN);
+    OUT_GPIO(C3PIN);
+
+    struct color leds[STRIP][STRIP];
+
+    if (argc == 2) {
+        if (strcmp("clear", argv[1]) == 0) {
+            clear(leds);
+            return 0;
+        }
+    }
+
+    for (int y = 0; y < STRIP; y++) {
+        for (int x = 0; x < STRIP; x++) {
+            leds[x][y].red = 15 * y;
+            leds[x][y].green = 50;
+            leds[x][y].blue = 255 - 15 * y - 1;
+        }
+    }
+    updateMatrix(leds);
+    sleep(3);
+    for (int y = 0; y < STRIP; y++) {
+        for (int x = 0; x < STRIP; x++) {
+            leds[x][y].green = 15 * x;
+            leds[x][y].red = 50;
+            leds[x][y].blue = 255 - 15 * x - 1;
+        }
+    }
+    updateMatrix(leds);
+    sleep(3);
+
+
+    while (1) {
+        clear(leds);
+        for (int y = 0; y < STRIP; y++) {
+            for (int x = 0; x < STRIP; x++) {
+                leds[x][y].red = 15 * y;
+                leds[x][y].green = 50;
+                leds[x][y].blue = 255 - 15 * y - 1;
+                updateMatrix(leds);
+                sleep(1);
+            }
+        }
+        clear(leds);
+        for (int y = 0; y < STRIP; y++) {
+            for (int x = 0; x < STRIP; x++) {
+                leds[x][y].green = 15 * x;
+                leds[x][y].red = 50;
+                leds[x][y].blue = 255 - 15 * x - 1;
+                updateMatrix(leds);
+                sleep(1);
+            }
+        }
+    }
+
+    /* while(1) {
+         fill(255, 0, 0);
+         update();
+         sleep(3);
+         fill(0, 255, 0);
+         update();
+         sleep(3);
+         fill(0, 0, 255);
+         update();
+         sleep(3);
+     }*/
 
     return 0;
 

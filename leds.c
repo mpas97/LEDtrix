@@ -1,7 +1,3 @@
-#ifndef LEDTRIX_LEDS_H
-#define LEDTRIX_LEDS_H
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -10,7 +6,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "color.h"
+//#include <color.h>
 
 #define BLOCK_SIZE 4096
 #define GPIO_BASE 0x200000
@@ -45,6 +41,12 @@ volatile unsigned *gpio;
 #define GPIO_PULL *(gpio+37) // Pull up/pull down
 #define GPIO_PULLCLK0 *(gpio+38) // Pull up/pull down clock
 
+struct color {
+    uint8_t red;
+    uint8_t green;
+    uint8_t blue;
+};
+
 uint32_t matrix[SIZE];
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -73,6 +75,91 @@ void printButton(int g) {
         printf("Button pressed!\n");
     else // port is LOW=0V
         printf("Button released!\n");
+}
+
+int main(int argc, char **argv) {
+
+    // Set up gpio pointer for direct register access
+    setup_io();
+
+    // must use INP_GPIO before we can use OUT_GPIO
+    INP_GPIO(D1PIN);
+    OUT_GPIO(D1PIN);
+    INP_GPIO(D2PIN);
+    OUT_GPIO(D2PIN);
+    INP_GPIO(D3PIN);
+    OUT_GPIO(D3PIN);
+    INP_GPIO(CLPIN);
+    OUT_GPIO(CLPIN);
+    INP_GPIO(C3PIN);
+    OUT_GPIO(C3PIN);
+
+    struct color leds[STRIP][STRIP];
+
+    if (argc == 2) {
+        if (strcmp("clear", argv[1]) == 0) {
+            clear(leds);
+            return 0;
+        }
+    }
+
+    for (int y = 0; y < STRIP; y++) {
+        for (int x = 0; x < STRIP; x++) {
+            leds[x][y].red = 15 * y;
+            leds[x][y].green = 50;
+            leds[x][y].blue = 255 - 15 * y - 1;
+        }
+    }
+    updateMatrix(leds);
+    sleep(3);
+    for (int y = 0; y < STRIP; y++) {
+        for (int x = 0; x < STRIP; x++) {
+            leds[x][y].green = 15 * x;
+            leds[x][y].red = 50;
+            leds[x][y].blue = 255 - 15 * x - 1;
+        }
+    }
+    updateMatrix(leds);
+    sleep(3);
+
+
+    while (1) {
+        clear(leds);
+        for (int y = 0; y < STRIP; y++) {
+            for (int x = 0; x < STRIP; x++) {
+                leds[x][y].red = 15 * y;
+                leds[x][y].green = 50;
+                leds[x][y].blue = 255 - 15 * y - 1;
+                updateMatrix(leds);
+                sleep(1);
+            }
+        }
+        clear(leds);
+        for (int y = 0; y < STRIP; y++) {
+            for (int x = 0; x < STRIP; x++) {
+                leds[x][y].green = 15 * x;
+                leds[x][y].red = 50;
+                leds[x][y].blue = 255 - 15 * x - 1;
+                updateMatrix(leds);
+                sleep(1);
+            }
+        }
+    }
+
+    /* while(1) {
+         fill(255, 0, 0);
+         update();
+         sleep(3);
+         fill(0, 255, 0);
+         update();
+         sleep(3);
+         fill(0, 0, 255);
+         update();
+         sleep(3);
+     }*/
+
+    return 0;
+
 }
 
 pthread_t current;
@@ -288,6 +375,3 @@ void setup_io() {
     gpio = (volatile unsigned *) gpio_map;
 
 }
-
-#endif //LEDTRIX_LEDS_H
-
