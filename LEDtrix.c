@@ -74,16 +74,14 @@ int main(int argc, char **argv) {
     INP_GPIO(C3PIN);
     OUT_GPIO(C3PIN);
 
-    struct color leds[STRIP][STRIP];
-
     if (argc == 2) {
         if (strcmp("clear", argv[1]) == 0) {
-            clear(leds);
+            clear();
             return 0;
         }
     }
 
-    test(leds);
+    test();
 
     /* while(1) {
          fill(255, 0, 0);
