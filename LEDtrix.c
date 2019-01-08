@@ -83,48 +83,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    for (int y = 0; y < STRIP; y++) {
-        for (int x = 0; x < STRIP; x++) {
-            leds[x][y].red = 15 * y;
-            leds[x][y].green = 50;
-            leds[x][y].blue = 255 - 15 * y - 1;
-        }
-    }
-    updateMatrix(leds);
-    sleep(3);
-    for (int y = 0; y < STRIP; y++) {
-        for (int x = 0; x < STRIP; x++) {
-            leds[x][y].green = 15 * x;
-            leds[x][y].red = 50;
-            leds[x][y].blue = 255 - 15 * x - 1;
-        }
-    }
-    updateMatrix(leds);
-    sleep(3);
-
-
-    while (1) {
-        clear(leds);
-        for (int y = 0; y < STRIP; y++) {
-            for (int x = 0; x < STRIP; x++) {
-                leds[x][y].red = 15 * y;
-                leds[x][y].green = 50;
-                leds[x][y].blue = 255 - 15 * y - 1;
-                updateMatrix(leds);
-                sleep(1);
-            }
-        }
-        clear(leds);
-        for (int y = 0; y < STRIP; y++) {
-            for (int x = 0; x < STRIP; x++) {
-                leds[x][y].green = 15 * x;
-                leds[x][y].red = 50;
-                leds[x][y].blue = 255 - 15 * x - 1;
-                updateMatrix(leds);
-                sleep(1);
-            }
-        }
-    }
+    test(leds);
 
     /* while(1) {
          fill(255, 0, 0);

@@ -23,8 +23,6 @@
 #define BLOCK SIZE/3
 #define STRIP BLOCK/5
 
-// compile: gcc leds.c -o leds -lpthread
-
 int mem_fd;
 void *gpio_map;
 
@@ -52,11 +50,14 @@ void fill(uint8_t red, uint8_t green, uint8_t blue, struct color leds[STRIP][STR
 
 void setLed(int pos, uint8_t red, uint8_t green, uint8_t blue);
 
+//void setLedsRGB(int xpos, int ypos, uint8_t red, uint8_t green, uint8_t blue, struct color leds[STRIP][STRIP]);
+
+//void setLedsColor(int xpos, int ypos, struct color col, struct color leds[STRIP][STRIP]);
+//TODO
+
 void setup_io();
 
 void sendStartFrame();
-
-void sendEndFrame();
 
 void send_32_bits(uint32_t val1, uint32_t val2, uint32_t val3);
 
@@ -75,10 +76,55 @@ void printButton(int g) {
         printf("Button released!\n");
 }
 
+void test(struct color leds[STRIP][STRIP]){
+    for (int y = 0; y < STRIP; y++) {
+        for (int x = 0; x < STRIP; x++) {
+            leds[x][y].red = 15 * y;
+            leds[x][y].green = 50;
+            leds[x][y].blue = 255 - 15 * y - 1;
+        }
+    }
+    updateMatrix(leds);
+    sleep(3);
+    for (int y = 0; y < STRIP; y++) {
+        for (int x = 0; x < STRIP; x++) {
+            leds[x][y].green = 15 * x;
+            leds[x][y].red = 50;
+            leds[x][y].blue = 255 - 15 * x - 1;
+        }
+    }
+    updateMatrix(leds);
+    sleep(3);
+
+
+    while (1) {
+        clear(leds);
+        for (int y = 0; y < STRIP; y++) {
+            for (int x = 0; x < STRIP; x++) {
+                leds[x][y].red = 15 * y;
+                leds[x][y].green = 50;
+                leds[x][y].blue = 255 - 15 * y - 1;
+                updateMatrix(leds);
+                sleep(1);
+            }
+        }
+        clear(leds);
+        for (int y = 0; y < STRIP; y++) {
+            for (int x = 0; x < STRIP; x++) {
+                leds[x][y].green = 15 * x;
+                leds[x][y].red = 50;
+                leds[x][y].blue = 255 - 15 * x - 1;
+                updateMatrix(leds);
+                sleep(1);
+            }
+        }
+    }
+}
+
 pthread_t current;
 pthread_mutex_t run = PTHREAD_MUTEX_INITIALIZER;
 
-/*
+/**
  * Replaces the continuous led frame sending thread.
  * So that the current colors will be visible.
  */
@@ -95,9 +141,11 @@ void update() {
     current = next;
 }
 
-/*
+/**
  * Sends a start frame, SIZE-times a LED frame followed by an end frame.
  * This is repeated until the thread got cancelled.
+ *
+ * @param data all the colors for the leds
  */
 void *outputThread(uint32_t data[]) {
     pthread_cleanup_push((void *) pthread_mutex_unlock, (void *) &run);
@@ -123,6 +171,12 @@ void *outputThread(uint32_t data[]) {
         }
     pthread_cleanup_pop(1);
 }
+
+/**
+ * set all leds so the Matrix is displayed correctly.
+ *
+ * @param leds the matrix
+ */
 
 void updateMatrix(struct color leds[STRIP][STRIP]) {
     for (int i = 0; i < STRIP; i++) {
@@ -154,8 +208,13 @@ void updateMatrix(struct color leds[STRIP][STRIP]) {
     update();
 }
 
-/*
+/**
  * Changes the color of a specific LED.
+ *
+ * @param pos of the led
+ * @param red
+ * @param green
+ * @param blue
  */
 void setLed(int pos, uint8_t red, uint8_t green, uint8_t blue) {
     matrix[pos] = 0x8F000000;
@@ -164,8 +223,13 @@ void setLed(int pos, uint8_t red, uint8_t green, uint8_t blue) {
     matrix[pos] |= blue << 16;
 }
 
-/*
+/**
  * Sets all LED matrix entries to the same color.
+ *
+ * @param red
+ * @param green
+ * @param blue
+ * @param leds the matrix
  */
 void fill(uint8_t red, uint8_t green, uint8_t blue, struct color leds[STRIP][STRIP]) {
     sendStartFrame();
@@ -178,12 +242,34 @@ void fill(uint8_t red, uint8_t green, uint8_t blue, struct color leds[STRIP][STR
     }
     updateMatrix(leds);
     sleep(3);
-    sendEndFrame();
 }
 
-/*
+/**
+* Turns all LEDs off.
+* Sends a start frame, SIZE-times an all zero LED frame followed by an end frame.
+*
+* @param leds
+*/
+void clear(struct color leds[STRIP][STRIP]) {
+    sendStartFrame();
+    for (int y = 0; y < STRIP; y++) {
+        for (int x = 0; x < STRIP; x++) {
+            leds[x][y].red = 0;
+            leds[x][y].green = 0;
+            leds[x][y].blue = 0;
+        }
+    }
+    updateMatrix(leds);
+    sleep(3);
+}
+
+/**
  * Sends all 32 bits of an unit32 param over GPIO.
  * The order is from highest to lowest bit.
+ *
+ * @param val1 color led in first block
+ * @param val2 color led in second block
+ * @param val3 color led in third block
  */
 void send_32_bits(uint32_t val1, uint32_t val2, uint32_t val3) {
     for (int shift = 0; shift < 32; shift++) {
@@ -217,7 +303,7 @@ void send_32_bits(uint32_t val1, uint32_t val2, uint32_t val3) {
     }
 }
 
-/*
+/**
  * Sends a start frame.
  * This is at least a 32 bit long sequence of zeros.
  */
@@ -225,35 +311,7 @@ void sendStartFrame() {
     send_32_bits(0, 0, 0);
 }
 
-/*
- * Sends an end frame.
- * This is at least a (SIZE/2+1) bit long sequence of ones.
- */
-void sendEndFrame() {
-    for (int i = 0; i <= (BLOCK / 2 + 1) >> 5; i++) {
-        send_32_bits(0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF);
-    }
-}
-
-/*
- * Turns all LEDs off.
- * Sends a start frame, SIZE-times an all zero LED frame followed by an end frame.
- */
-void clear(struct color leds[STRIP][STRIP]) {
-    sendStartFrame();
-    for (int y = 0; y < STRIP; y++) {
-        for (int x = 0; x < STRIP; x++) {
-            leds[x][y].red = 0;
-            leds[x][y].green = 0;
-            leds[x][y].blue = 0;
-        }
-    }
-    updateMatrix(leds);
-    sleep(3);
-    sendEndFrame();
-}
-
-/*
+/**
  * Sets up memory regions to access GPIO.
  */
 void setup_io() {
