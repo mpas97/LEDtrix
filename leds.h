@@ -9,7 +9,6 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "color.h"
 
 #define BLOCK_SIZE 4096
 #define GPIO_BASE 0x200000
@@ -66,7 +65,7 @@ void test();
 
 void update();
 
-void updateMatrix(struct color leds[STRIP][STRIP]);
+void updateMatrix();
 
 void *outputThread(uint32_t data[]);
 
@@ -184,7 +183,7 @@ void *outputThread(uint32_t data[]) {
  *
  * @param leds the matrix
  */
-void updateMatrix(struct color leds[STRIP][STRIP]) {
+void updateMatrix() {
     for (int i = 0; i < STRIP; i++) {
         //(x,y) = (0,0) is upper left corner
         setLed(i, leds[4][STRIP - i - 1].red, leds[4][STRIP - i - 1].green, leds[4][STRIP - i - 1].blue); //5th strip

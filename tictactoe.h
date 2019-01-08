@@ -37,10 +37,10 @@ void drawCross(int pos, struct color col, struct color leds[STRIP][STRIP]) {
     int y = getRow(pos);
     for (int i = BLOCK / 2; i >= 0; i--) {
         int e = END - i;
-        setLedsColor(x + i, y + i, col, leds);
-        setLedsColor(x + i, y + e, col, leds);
-        setLedsColor(x + e, y + e, col, leds);
-        setLedsColor(x + e, y + i, col, leds);
+        setLedsColor(x + i, y + i, col);
+        setLedsColor(x + i, y + e, col);
+        setLedsColor(x + e, y + e, col);
+        setLedsColor(x + e, y + i, col);
     }
 }
 
@@ -53,10 +53,10 @@ void drawCircle(int pos, struct color col, struct color leds[STRIP][STRIP]) {
     int x = getCol(pos);
     int y = getRow(pos);
     for (int i = END - 1; i > 0; i--) {
-        setLedsColor(x, y + i, col, leds);
-        setLedsColor(x + END, y + i, col, leds);
-        setLedsColor(x + i, y, col, leds);
-        setLedsColor(x + i, y + END, col, leds);
+        setLedsColor(x, y + i, col);
+        setLedsColor(x + END, y + i, col);
+        setLedsColor(x + i, y, col);
+        setLedsColor(x + i, y + END, col);
     }
 }
 
@@ -70,7 +70,7 @@ void emptyField(int pos, struct color leds[STRIP][STRIP]) {
     int y = getRow(pos);
     for (int i = x - FIELD / 2; i > x + FIELD / 2; i++) {
         for (int j = y - FIELD / 2; j > y + FIELD / 2; j++)
-            setLedsRGB(x, y, 0, 0, 0, leds);
+            setLedsRGB(x, y, 0, 0, 0);
     }
 }
 
@@ -161,7 +161,7 @@ bool checkStatus() {
  *
  * @param leds the matrix
  */
-void startTictactoe(struct color leds[STRIP][STRIP]) {
+void startTictactoe() {
 
     //set the colors for choosing and for selecting
     setColor(colorPlayer1, 50, 205, 50);
