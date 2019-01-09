@@ -371,6 +371,18 @@ void setup_io() {
     // Always use volatile pointer!
     gpio = (volatile unsigned *) gpio_map;
 
+    // must use INP_GPIO before we can use OUT_GPIO
+    INP_GPIO(D1PIN);
+    OUT_GPIO(D1PIN);
+    INP_GPIO(D2PIN);
+    OUT_GPIO(D2PIN);
+    INP_GPIO(D3PIN);
+    OUT_GPIO(D3PIN);
+    INP_GPIO(CLPIN);
+    OUT_GPIO(CLPIN);
+    INP_GPIO(C3PIN);
+    OUT_GPIO(C3PIN);
+
 }
 
 #endif //LEDTRIX_LEDS_H

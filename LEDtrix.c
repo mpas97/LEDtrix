@@ -13,18 +13,6 @@ int main(int argc, char **argv) {
     // Set up gpio pointer for direct register access
     setup_io();
 
-    // must use INP_GPIO before we can use OUT_GPIO
-    INP_GPIO(D1PIN);
-    OUT_GPIO(D1PIN);
-    INP_GPIO(D2PIN);
-    OUT_GPIO(D2PIN);
-    INP_GPIO(D3PIN);
-    OUT_GPIO(D3PIN);
-    INP_GPIO(CLPIN);
-    OUT_GPIO(CLPIN);
-    INP_GPIO(C3PIN);
-    OUT_GPIO(C3PIN);
-
     // clear all leds, so the matrix is initialized
     clear();
 
@@ -32,15 +20,16 @@ int main(int argc, char **argv) {
     // wenn spiel verloren, zurück zu auswahl (auf diesem Spiel stehen bleiben)
     if (argc == 2) {
         if (strcmp("clear", argv[1]) == 0){
-            printf("clear");
             return 0;
         }
         if (strcmp("ttt", argv[1]) == 0) {
             startTictactoe();
+            clear();
             return 0;
         }
         if (strcmp("rd", argv[1]) == 0) {
             startRaindrops();
+            clear();
             return 0;
         }
     }
