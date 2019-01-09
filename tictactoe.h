@@ -10,7 +10,8 @@
 #define END (FIELD -1)
 
 bool turnPlayer1 = true;
-bool playing = true;
+bool running = true;
+bool choosing = true;
 int pos = 8;
 int winner = 0;
 
@@ -219,6 +220,21 @@ void endTictactoe() {
     sleep(10);
 }
 
+void ttt_btn_left() {
+    printf("ttt_left\n");
+    /*if (choosing) {
+        choosing = false;
+        selectField();
+        choosing = true;
+    }*/
+}
+
+void ttt_btn_right() {
+    printf("ttt_right\n");
+    /*if (choosing)
+        nextField();*/
+}
+
 /**
  * Start the Tictactoe
  *
@@ -226,13 +242,14 @@ void endTictactoe() {
  */
 void startTictactoe() {
 
+
     for (int i = 0; i < 9; i++) {
         stateOfField[i] = -1;
     }
 
-    turnPlayer1 = false;
-    bool running = true;
-    bool choosing;
+    //turnPlayer1 = false;
+    //bool running = true;
+    //bool choosing;
 
     while (running) {
         choosing = true;
@@ -240,13 +257,14 @@ void startTictactoe() {
         while (choosing) {
             //TODO: if right button pushed
             nextField();
-            //sleep(1);
+            sleep(1);
             //TODO: if left button pushed
             choosing = false;
         }
         selectField();
-        //sleep(1);
+        sleep(1);
         running = checkStatus();
+        sleep(1);
     }
 
     endTictactoe();

@@ -1,10 +1,8 @@
-//
-// Created by salom on 02.01.2019.
-//
 #include "color.h"
 #include "leds.h"
 #include "tictactoe.h"
 #include "raindrops.h"
+#include "buttons.h"
 
 // compile: gcc LEDtrix.c -o LEDtrix -lpthread
 
@@ -12,6 +10,7 @@ int main(int argc, char **argv) {
 
     // Set up gpio pointer for direct register access
     setup_io();
+    setupButtons();
 
     // clear all leds, so the matrix is initialized
     clear();
@@ -23,6 +22,7 @@ int main(int argc, char **argv) {
             return 0;
         }
         if (strcmp("ttt", argv[1]) == 0) {
+            game = 1;
             startTictactoe();
             clear();
             return 0;
@@ -37,6 +37,5 @@ int main(int argc, char **argv) {
     test();
 
     return 0;
-
 }
 
