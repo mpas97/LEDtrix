@@ -27,9 +27,24 @@ void drawPlayer(struct color col) {
 /**
  * What should happen if the player loses (gets hit by a raindrop)
  */
-void endGame() {
-    player = STRIP / 2 - 1;
+void endRaindrops() {
+    //player = STRIP / 2 - 1;
+    clear();
 
+    int x = 0;
+    int y = 0;
+
+    struct color col;
+    setColor(&col, 225, 30, 30);
+
+    for (int i = STRIP -1; i > 0; i--) {
+        setLedsColor(x, y + i, col);
+        setLedsColor(x + STRIP-1, y + i, col);
+        setLedsColor(x + i, y, col);
+        setLedsColor(x + i, y + STRIP-1, col);
+
+    }
+    updateMatrix();
 }
 
 /**
@@ -38,7 +53,6 @@ void endGame() {
 bool control() {
     if (raindrops[player][STRIP - 1] || raindrops[player + 1][STRIP - 1] ||
         raindrops[player][STRIP - 2] || raindrops[player + 1][STRIP - 2]) {
-        endGame();
         drawPlayer(colorFail);
         return false;
     }
@@ -74,6 +88,7 @@ void rain() {
 
         }
     }
+    //sleep(1);
 }
 
 /**
@@ -98,10 +113,10 @@ void moveRight() {
     }
 }
 
-int startRaindrops() {
-    setColor(colorFail, 205, 51, 51);
-    setColor(colPlayer, 34, 139, 34);
-    setColor(colorDrop, 47, 79, 79);
+void startRaindrops() {
+    setColor(&colorFail, 205, 51, 51);
+    setColor(&colPlayer, 34, 139, 34);
+    setColor(&colorDrop, 47, 79, 79);
 
     player = STRIP / 2 - 1;
     drawPlayer(colPlayer);
@@ -119,7 +134,8 @@ int startRaindrops() {
         running = control();
     }
 
-    return 0;
+    endRaindrops();
+    sleep(10);
 }
 
 #endif //LEDTRIX_RAINDROPS_H
