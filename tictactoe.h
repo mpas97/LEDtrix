@@ -193,7 +193,7 @@ bool checkStatus() {
     }
     if (stateOfField[0] != -1) {
         // first row || first column
-        if ((stateOfField[0] == stateOfField[1] && stateOfField[1] == stateOfField[2]) ||
+        if ((stateOfField[0] == stateOfField[1] && stateOfField[0] == stateOfField[2]) ||
             (stateOfField[0] == stateOfField[3] && stateOfField[0] == stateOfField[6])) {
             winner = stateOfField[0];
             return false;
@@ -201,7 +201,7 @@ bool checkStatus() {
     }
     if (stateOfField[8] != -1) {
         // last row || last column
-        if ((stateOfField[8] == stateOfField[6] && stateOfField[8] == stateOfField[2]) ||
+        if ((stateOfField[8] == stateOfField[6] && stateOfField[8] == stateOfField[7]) ||
             (stateOfField[8] == stateOfField[2] && stateOfField[8] == stateOfField[5])) {
             winner = stateOfField[8];
             return false;
