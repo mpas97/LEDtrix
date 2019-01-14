@@ -9,6 +9,21 @@
 #define FIELD (STRIP/3)
 #define END (FIELD -1)
 
+int getCol(int pos);
+int getRow(int pos);
+void drawItem(int pos);
+void drawTie();
+void drawWon();
+void clearField(int pos);
+void changePlayer();
+void nextField();
+void selectField();
+bool checkStatus();
+void endTictactoe();
+void ttt_btn_left();
+void ttt_btn_right();
+void startTictactoe();
+
 bool turnPlayer1 = true;
 bool running = true;
 bool choosing = true;
@@ -18,12 +33,23 @@ int winner = 0;
 //-1 for empty, 0 for preview, 1 or 2 for selected by player 1 or 2
 int stateOfField[9] = {-1};
 
-bool checkStatus();
 
+/**
+ * get the column of the matrix
+ *
+ * @param pos in the matrix
+ * @return row
+ */
 int getCol(int pos) {
     return pos % 3 * FIELD;
 }
 
+/**
+ * get the row of the matrix
+ *
+ * @param pos in the matrix
+ * @return row
+ */
 int getRow(int pos) {
     return pos / 3 * FIELD;
 }
@@ -78,6 +104,9 @@ void drawItem(int pos) {
     updateMatrix();
 }
 
+/**
+ * draw the sign of the winner in his color, and write "WON" in the middle row
+ */
 void drawWon() {
     turnPlayer1 = winner == 1;
 
@@ -212,6 +241,8 @@ bool checkStatus() {
         if (stateOfField[i] == -1)
             return true;
     }
+
+    winner = 0;
     return false;
 }
 
