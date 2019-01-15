@@ -4,12 +4,31 @@
 #include <stdbool.h>
 #include "color.h" //TODO: remove
 #include "leds.h" //TODO: remove
+#include "buttons.h" //TODO: remove
+
+void drawPlayer(struct color col);
+
+void rain();
+
+void moveLeft();
+
+void moveRight();
+
+void drawSadFace();
+
+bool rd_checkStatus();
+
+void endRaindrops();
+
+void startRaindrops();
+
 
 bool raindrops[STRIP][STRIP] = {false};
 int player;
 struct color colorFail;
 struct color colPlayer;
 struct color colorDrop;
+
 
 /**
  * Draw and print the field with the player.
@@ -22,42 +41,6 @@ void drawPlayer(struct color col) {
     setLedsColor(player, STRIP - 2, col);
     setLedsColor(player + 1, STRIP - 2, col);
     updateMatrix();
-}
-
-/**
- * What should happen if the player loses (gets hit by a raindrop)
- */
-void endRaindrops() {
-    //player = STRIP / 2 - 1;
-    clear();
-
-    int x = 0;
-    int y = 0;
-
-    struct color col;
-    setColor(&col, 225, 30, 30);
-
-    for (int i = STRIP -1; i > 0; i--) {
-        setLedsColor(x, y + i, col);
-        setLedsColor(x + STRIP-1, y + i, col);
-        setLedsColor(x + i, y, col);
-        setLedsColor(x + i, y + STRIP-1, col);
-
-    }
-    updateMatrix();
-}
-
-/**
- * Control the position of the player using his upper left position.
- */
-bool control() {
-    if (raindrops[player][STRIP - 1] || raindrops[player + 1][STRIP - 1] ||
-        raindrops[player][STRIP - 2] || raindrops[player + 1][STRIP - 2]) {
-        drawPlayer(colorFail);
-        return false;
-    }
-    drawPlayer(colPlayer);
-    return true;
 }
 
 /**
@@ -75,11 +58,10 @@ void rain() {
         }
     }
     for (int i = 0; i < STRIP; i++) {
-        int color = rand() % 3;
-        if (color == 2) {
+        int rain = rand() % 3;
+        if (rain == 2) {
             raindrops[i][0] = true;
             setLedsColor(i, 0, colorDrop);
-
         } else {
             raindrops[i][0] = false;
             setLedsRGB(i, 0, 0, 0, 0);
@@ -113,6 +95,47 @@ void moveRight() {
     }
 }
 
+void drawSadFace(){
+    clear();
+
+    int x = 0;
+    int y = 0;
+
+    struct color col;
+    setColor(&col, 225, 30, 30);
+
+    for (int i = STRIP -1; i > 0; i--) {
+        setLedsColor(x, y + i, col);
+        setLedsColor(x + STRIP-1, y + i, col);
+        setLedsColor(x + i, y, col);
+        setLedsColor(x + i, y + STRIP-1, col);
+    }
+}
+
+/**
+ * Control the position of the player using his upper left position.
+ */
+bool rd_checkStatus() {
+    if (raindrops[player][STRIP - 1] || raindrops[player + 1][STRIP - 1] ||
+        raindrops[player][STRIP - 2] || raindrops[player + 1][STRIP - 2]) {
+        drawPlayer(colorFail);
+        return false;
+    }
+    drawPlayer(colPlayer);
+    return true;
+}
+
+/**
+ * What should happen if the player loses (gets hit by a raindrop)
+ */
+void endRaindrops() {
+    drawSadFace();
+    while (!btn_l && !btn_r) {}
+}
+
+/**
+ * start Raindrops
+ */
 void startRaindrops() {
     setColor(&colorFail, 205, 51, 51);
     setColor(&colPlayer, 34, 139, 34);
@@ -126,12 +149,12 @@ void startRaindrops() {
     while (running) {
         //TODO: if left button: move left, if right button: move right, rain zeit?
         rain();
-        control();
+        rd_checkStatus();
         moveLeft();
-        control();
+        rd_checkStatus();
         moveRight();
-        control();
-        running = control();
+        rd_checkStatus();
+        running = rd_checkStatus();
     }
 
     endRaindrops();

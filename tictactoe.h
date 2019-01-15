@@ -20,19 +20,20 @@ void drawTie();
 
 void drawWon();
 
-void clearField(int pos);
-
 void changePlayer();
 
 void nextField();
 
+void clearField(int pos);
+
 void selectField();
 
-bool checkStatus();
+bool ttt_checkStatus();
 
 void endTictactoe();
 
 void startTictactoe();
+
 
 bool turnPlayer1 = true;
 bool running = true;
@@ -219,16 +220,6 @@ void drawTie() {
 }
 
 /**
- * Remove the circle or the dross of this field
- *
- * @param pos of the field
- */
-void clearField(int pos) {
-    stateOfField[pos] = -1;
-    drawItem(pos);
-}
-
-/**
  * change the boolean so its the next players turn.
  */
 void changePlayer() {
@@ -243,7 +234,7 @@ void changePlayer() {
 void nextField() {
     if (stateOfField[pos] == 0)
         clearField(pos);
-    if (checkStatus()) {
+    if (ttt_checkStatus()) {
         do {
             pos++;
             if (pos >= 9) pos = 0;
@@ -251,6 +242,16 @@ void nextField() {
         stateOfField[pos] = 0;
         drawItem(pos);
     }
+}
+
+/**
+ * Remove the circle or the cross of this field
+ *
+ * @param pos of the field
+ */
+void clearField(int pos) {
+    stateOfField[pos] = -1;
+    drawItem(pos);
 }
 
 /**
@@ -270,7 +271,7 @@ void selectField() {
  * Checks whether the game should be continued or if its finished
  * @return
  */
-bool checkStatus() {
+bool ttt_checkStatus() {
     if (stateOfField[4] != -1) {
         // middle row || middle column || first diagonal || second diagonal
         if ((stateOfField[4] == stateOfField[3] && stateOfField[4] == stateOfField[5]) ||
@@ -313,21 +314,6 @@ void endTictactoe() {
     while(!btn_l && !btn_r){}
 }
 
-void ttt_btn_left() {
-    printf("ttt_left\n");
-    /*if (choosing) {
-        choosing = false;
-        selectField();
-        choosing = true;
-    }*/
-}
-
-void ttt_btn_right() {
-    printf("ttt_right\n");
-    /*if (choosing)
-        nextField();*/
-}
-
 /**
  * method to finish the game without a winner
  * TODO: remove
@@ -350,14 +336,12 @@ void getTie() {
     selectField();
     pos = 7;
     selectField();
-    checkStatus();
+    ttt_checkStatus();
     endTictactoe();
 }
 
 /**
  * Start the Tictactoe
- *
- * @param leds the matrix
  */
 void startTictactoe() {
 
@@ -389,7 +373,7 @@ void startTictactoe() {
             //sleep(1);
         }
         selectField();
-        running = checkStatus();
+        running = ttt_checkStatus();
     }
 
     endTictactoe();
