@@ -1,8 +1,8 @@
 #include "color.h"
 #include "leds.h"
+#include "buttons.h"
 #include "tictactoe.h"
 #include "raindrops.h"
-#include "buttons.h"
 
 // compile: gcc LEDtrix.c -o LEDtrix -pthread -lwiringPi
 
@@ -22,7 +22,6 @@ int main(int argc, char **argv) {
             return 0;
         }
         if (strcmp("ttt", argv[1]) == 0) {
-            game = 1;
             startTictactoe();
             clear();
             return 0;

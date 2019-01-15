@@ -3,20 +3,18 @@
 
 #include <stdio.h>
 #include <sys/time.h>
+#include <stdbool.h>
 #include <wiringPi.h>
 
-#define IGNORE_CHANGE_BELOW_USEC 500000
+#define IGNORE_CHANGE_BELOW_USEC 1000000
 #define BTNL 25
 #define BTNR 27
 
 
-void ttt_btn_left();
-void ttt_btn_right();
-//void rd_btn_left();
-//void rd_btn_left();
-
+volatile bool btn_l = false;
+volatile bool btn_r = false;
 struct timeval last_change_l;
-int game;
+struct timeval last_change_r;
 
 void handleLeft() {
     struct timeval now;
@@ -29,20 +27,10 @@ void handleLeft() {
 
     // Filter jitter
     if (diff > IGNORE_CHANGE_BELOW_USEC) {
-        printf("button left pressed!\n");
-        switch(game) {
-            case 0:
-                //spiel auswählen.h
-                break;
-            case 1:
-                ttt_btn_left();
-                break;
-        }
+        btn_l = true;
         last_change_l = now;
     }
 }
-
-struct timeval last_change_r;
 
 void handleRight() {
     struct timeval now;
@@ -55,15 +43,7 @@ void handleRight() {
 
     // Filter jitter
     if (diff > IGNORE_CHANGE_BELOW_USEC) {
-        printf("button right pressed!\n");
-        switch(game) {
-            case 0:
-                //spiel auswählen.h
-                break;
-            case 1:
-                ttt_btn_right();
-                break;
-        }
+        btn_r = true;
         last_change_r = now;
     }
 }

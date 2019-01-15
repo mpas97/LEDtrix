@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "color.h" //TODO: remove
 #include "leds.h" //TODO: remove
+#include "buttons.h" //TODO: remove
 
 
 #define FIELD (STRIP/3)
@@ -30,10 +31,6 @@ void selectField();
 bool checkStatus();
 
 void endTictactoe();
-
-void ttt_btn_left();
-
-void ttt_btn_right();
 
 void startTictactoe();
 
@@ -179,10 +176,12 @@ void drawTie() {
     clear();
     for (int i = 0; i < 3; i++) {
         pos = i;
+        stateOfField[pos] = 0;
         selectField();
     }
     for (int i = 6; i < 9; i++) {
         pos = i;
+        stateOfField[pos] = 0;
         selectField();
     }
     sleep(1);
@@ -217,8 +216,6 @@ void drawTie() {
         setLedsColor(x + i, y + END, col);
     }
     updateMatrix();
-
-
 }
 
 /**
@@ -262,9 +259,11 @@ void nextField() {
  * @param pos of the field
  */
 void selectField() {
-    stateOfField[pos] = turnPlayer1 ? 1 : 2;
-    drawItem(pos);
-    changePlayer();
+    if (stateOfField[pos] == 0) {
+        stateOfField[pos] = turnPlayer1 ? 1 : 2;
+        drawItem(pos);
+        changePlayer();
+    }
 }
 
 /**
@@ -311,7 +310,7 @@ bool checkStatus() {
 void endTictactoe() {
     if (winner == 0) drawTie();
     else drawWon();
-    sleep(10);
+    while(!btn_l && !btn_r){}
 }
 
 void ttt_btn_left() {
@@ -376,20 +375,21 @@ void startTictactoe() {
 
     while (running) {
         choosing = true;
-
         while (choosing) {
-            //TODO: if right button pushed
-            nextField();
-            sleep(1);
-            nextField();
-            sleep(1);
-            //TODO: if left button pushed
-            choosing = false;
+            if (btn_r) {
+                btn_r = false;
+                printf("ttt_r\n");
+                nextField();
+            }
+            if (btn_l) {
+                printf("ttt_l\n");
+                choosing = false;
+                btn_l = false;
+            }
+            //sleep(1);
         }
         selectField();
-        sleep(1);
         running = checkStatus();
-        sleep(1);
     }
 
     endTictactoe();
