@@ -36,7 +36,7 @@ void startTictactoe();
 
 
 bool turnPlayer1 = true;
-bool running = true;
+bool ttt_running = true;
 bool choosing = true;
 int pos = 8;
 int winner = 0;
@@ -313,7 +313,7 @@ bool ttt_checkStatus() {
 void endTictactoe() {
     if (winner == 0) drawTie();
     else drawWon();
-    while(!btn_l && !btn_r){}
+    while (!btn_l && !btn_r) {}
 }
 
 /**
@@ -353,14 +353,8 @@ void startTictactoe() {
     }
 
     //getTie();
-
-
-    //turnPlayer1 = false;
-    //bool running = true;
-    //bool choosing;
-
     nextField();
-    while (running) {
+    while (ttt_running) {
         choosing = true;
         while (choosing) {
             if (btn_r) {
@@ -374,7 +368,7 @@ void startTictactoe() {
             //sleep(1);
         }
         selectField();
-        running = ttt_checkStatus();
+        ttt_running = ttt_checkStatus();
     }
 
     endTictactoe();

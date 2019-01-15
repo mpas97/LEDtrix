@@ -6,7 +6,7 @@
 #include "leds.h" //TODO: remove
 #include "buttons.h" //TODO: remove
 
-void drawPlayer(struct color col);
+void drawPlayer();
 
 void rain();
 
@@ -16,13 +16,13 @@ void moveRight();
 
 void drawSadFace();
 
-bool rd_checkStatus();
+void rd_checkStatus();
 
 void endRaindrops();
 
 void startRaindrops();
 
-
+bool rd_running = true;
 bool raindrops[STRIP][STRIP] = {false};
 int player;
 struct color colorFail;
@@ -35,7 +35,10 @@ struct color colorDrop;
  *
  * @param color the color of the player
  */
-void drawPlayer(struct color col) {
+void drawPlayer() {
+    struct color col;
+    col = rd_running? colPlayer : colorFail;
+
     setLedsColor(player, STRIP - 1, col);
     setLedsColor(player + 1, STRIP - 1, col);
     setLedsColor(player, STRIP - 2, col);
@@ -44,13 +47,13 @@ void drawPlayer(struct color col) {
 }
 
 /**
- * Move each row one row down and create a new one.
+ * Move each row two rows down and create a new one.
  * The chance of having a raindrop is 1/3 per field, there are always two free fields next to eachother.
  */
 void rain() {
     for (int y = STRIP - 1; y > 0; y--) {
         for (int x = 0; x < STRIP; x++) {
-            raindrops[x][y] = raindrops[x][y - 1];
+            raindrops[x][y] = raindrops[x][y - 2];
             if (raindrops[x][y])
                 setLedsColor(x, y, colorDrop);
             else
@@ -70,7 +73,7 @@ void rain() {
 
         }
     }
-    //sleep(1);
+    rd_checkStatus();
 }
 
 /**
@@ -81,6 +84,7 @@ void moveLeft() {
         setLedsRGB(player + 1, STRIP - 1, 0, 0, 0);
         setLedsRGB(player + 1, STRIP - 2, 0, 0, 0);
         player -= 1;
+        rd_checkStatus();
     }
 }
 
@@ -92,6 +96,7 @@ void moveRight() {
         setLedsRGB(player, STRIP - 1, 0, 0, 0);
         setLedsRGB(player, STRIP - 2, 0, 0, 0);
         player += 1;
+        rd_checkStatus();
     }
 }
 
@@ -110,19 +115,26 @@ void drawSadFace(){
         setLedsColor(x + i, y, col);
         setLedsColor(x + i, y + STRIP-1, col);
     }
+
+    updateMatrix();
 }
 
 /**
  * Control the position of the player using his upper left position.
  */
-bool rd_checkStatus() {
-    if (raindrops[player][STRIP - 1] || raindrops[player + 1][STRIP - 1] ||
-        raindrops[player][STRIP - 2] || raindrops[player + 1][STRIP - 2]) {
-        drawPlayer(colorFail);
-        return false;
+void rd_checkStatus() {
+    if(rd_running) {
+        if (raindrops[player][STRIP - 1] || raindrops[player + 1][STRIP - 1] ||
+            raindrops[player][STRIP - 2] || raindrops[player + 1][STRIP - 2]) {
+            rd_running = false;
+            drawPlayer();
+            sleep(1);
+        }
+        else {
+            rd_running = true;
+            drawPlayer();
+        }
     }
-    drawPlayer(colPlayer);
-    return true;
 }
 
 /**
@@ -142,23 +154,37 @@ void startRaindrops() {
     setColor(&colorDrop, 47, 79, 79);
 
     player = STRIP / 2 - 1;
-    drawPlayer(colPlayer);
+    drawPlayer();
 
-    bool running = true;
+    struct timeval now;
+    unsigned long diff;
+    struct timeval beginning;
+    gettimeofday(&now, NULL);
 
-    while (running) {
-        //TODO: if left button: move left, if right button: move right, rain zeit?
+    while (rd_running) {
+
+        diff = 0;
+        beginning = now;
+
+        while(diff < 3000000) {
+            if(btn_r){
+                moveRight();
+                btn_r = false;
+            }
+            if(btn_l){
+                moveLeft();
+                btn_l = false;
+            }
+
+            gettimeofday(&now, NULL);
+            // Time difference in usec
+            diff = (now.tv_sec * 1000000 + now.tv_usec) - (beginning.tv_sec * 1000000 + beginning.tv_usec);
+        }
+
         rain();
-        rd_checkStatus();
-        moveLeft();
-        rd_checkStatus();
-        moveRight();
-        rd_checkStatus();
-        running = rd_checkStatus();
     }
 
     endRaindrops();
-    sleep(10);
 }
 
 #endif //LEDTRIX_RAINDROPS_H
