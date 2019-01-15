@@ -10,18 +10,31 @@
 #define END (FIELD -1)
 
 int getCol(int pos);
+
 int getRow(int pos);
+
 void drawItem(int pos);
+
 void drawTie();
+
 void drawWon();
+
 void clearField(int pos);
+
 void changePlayer();
+
 void nextField();
+
 void selectField();
+
 bool checkStatus();
+
 void endTictactoe();
+
 void ttt_btn_left();
+
 void ttt_btn_right();
+
 void startTictactoe();
 
 bool turnPlayer1 = true;
@@ -320,7 +333,7 @@ void ttt_btn_right() {
  * method to finish the game without a winner
  * TODO: remove
  */
-void getTie(){
+void getTie() {
     selectField();
     pos = 1;
     selectField();
@@ -366,6 +379,8 @@ void startTictactoe() {
 
         while (choosing) {
             //TODO: if right button pushed
+            nextField();
+            sleep(1);
             nextField();
             sleep(1);
             //TODO: if left button pushed
