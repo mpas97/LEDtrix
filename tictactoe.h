@@ -105,7 +105,7 @@ void drawItem(int pos) {
 }
 
 /**
- * draw the sign of the winner in his color, and write "WON" in the middle row
+ * draw the item of the winner in his color, and write "WON" in the middle row
  */
 void drawWon() {
     turnPlayer1 = winner == 1;
@@ -120,6 +120,7 @@ void drawWon() {
         stateOfField[i] = winner;
         drawItem(i);
     }
+    sleep(1);
 
     struct color col;
     setColor(&col, 225, 30, 30);
@@ -134,8 +135,8 @@ void drawWon() {
     setLedsColor(x + END / 2, y + END / 2, col);
     setLedsColor(x + 1, y + END - 1, col);
     setLedsColor(x + END - 1, y + END - 1, col);
-    sleep(1);
     updateMatrix();
+    sleep(1);
 
     //draw O
     x = getCol(4);
@@ -145,8 +146,8 @@ void drawWon() {
         setLedsColor(x + i, y, col);
         setLedsColor(x + i, y + END, col);
     }
-    sleep(1);
     updateMatrix();
+    sleep(1);
 
     //draw N
     x = getCol(5);
@@ -155,8 +156,56 @@ void drawWon() {
         setLedsColor(x + END, y + i, col);
         setLedsColor(x + i, y + i, col);
     }
-    sleep(1);
     updateMatrix();
+}
+
+/**
+ * draw both items in the correct color, and write "TIE" in the middle row
+ */
+void drawTie() {
+    clear();
+    for (int i = 0; i < 3; i++) {
+        pos = i;
+        selectField();
+    }
+    for (int i = 6; i < 9; i++) {
+        pos = i;
+        selectField();
+    }
+    sleep(1);
+
+    struct color col;
+    setColor(&col, 225, 30, 30);
+
+    //draw T
+    int x = getCol(3);
+    int y = getRow(3);
+    for (int i = 0; i <= END; i++) {
+        setLedsColor(x + i, y, col);
+        setLedsColor(x + (END / 2), y + i, col);
+    }
+    updateMatrix();
+    sleep(1);
+
+    //draw I
+    x = getCol(4);
+    for (int i = 0; i <= END; i++) {
+        setLedsColor(x + (END / 2), y + i, col);
+    }
+    updateMatrix();
+    sleep(1);
+
+    //draw E
+    x = getCol(5);
+    for (int i = 0; i <= END; i++) {
+        setLedsColor(x, y + i, col);
+        setLedsColor(x + i, y, col);
+        setLedsColor(x + i, y + (END / 2), col);
+        setLedsColor(x + i, y + END, col);
+    }
+    updateMatrix();
+
+
 }
 
 /**
@@ -247,7 +296,8 @@ bool checkStatus() {
 }
 
 void endTictactoe() {
-    drawWon();
+    if (winner == 0) drawTie();
+    else drawWon();
     sleep(10);
 }
 
@@ -267,6 +317,32 @@ void ttt_btn_right() {
 }
 
 /**
+ * method to finish the game without a winner
+ * TODO: remove
+ */
+void getTie(){
+    selectField();
+    pos = 1;
+    selectField();
+    pos = 2;
+    selectField();
+    pos = 3;
+    selectField();
+    pos = 5;
+    selectField();
+    pos = 4;
+    selectField();
+    pos = 6;
+    selectField();
+    pos = 8;
+    selectField();
+    pos = 7;
+    selectField();
+    checkStatus();
+    endTictactoe();
+}
+
+/**
  * Start the Tictactoe
  *
  * @param leds the matrix
@@ -277,6 +353,9 @@ void startTictactoe() {
     for (int i = 0; i < 9; i++) {
         stateOfField[i] = -1;
     }
+
+    //getTie();
+
 
     //turnPlayer1 = false;
     //bool running = true;
