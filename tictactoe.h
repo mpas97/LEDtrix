@@ -264,6 +264,8 @@ void selectField() {
         stateOfField[pos] = turnPlayer1 ? 1 : 2;
         drawItem(pos);
         changePlayer();
+        pos = -1;
+        nextField();
     }
 }
 
@@ -357,16 +359,15 @@ void startTictactoe() {
     //bool running = true;
     //bool choosing;
 
+    nextField();
     while (running) {
         choosing = true;
         while (choosing) {
             if (btn_r) {
                 btn_r = false;
-                printf("ttt_r\n");
                 nextField();
             }
             if (btn_l) {
-                printf("ttt_l\n");
                 choosing = false;
                 btn_l = false;
             }
