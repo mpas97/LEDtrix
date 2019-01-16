@@ -22,11 +22,11 @@ void drawWon();
 
 void changePlayer();
 
-void nextField();
+bool nextField();
 
 void clearField(int pos);
 
-void selectField();
+bool selectField();
 
 bool ttt_checkStatus();
 
@@ -37,14 +37,13 @@ void startTictactoe();
 void ttt_drawImage();
 
 
-bool turnPlayer1 = true;
+bool turnPlayer1 = false;
 bool ttt_running = true;
-bool choosing = true;
 int pos = 8;
 int winner = 0;
 
 //-1 for empty, 0 for preview, 1 or 2 for selected by player 1 or 2
-int stateOfField[9] = {-1};
+int stateOfField[9];
 
 
 /**
@@ -233,7 +232,7 @@ void changePlayer() {
  *
  * @param pos old position of the selector
  */
-void nextField() {
+bool nextField() {
     if (stateOfField[pos] == 0)
         clearField(pos);
     if (ttt_checkStatus()) {
@@ -243,7 +242,10 @@ void nextField() {
         } while (stateOfField[pos] != -1);
         stateOfField[pos] = 0;
         drawItem(pos);
+        return true;
     }
+    return false;
+
 }
 
 /**
@@ -261,14 +263,14 @@ void clearField(int pos) {
  *
  * @param pos of the field
  */
-void selectField() {
+bool selectField() {
     if (stateOfField[pos] == 0) {
         stateOfField[pos] = turnPlayer1 ? 1 : 2;
         drawItem(pos);
         changePlayer();
         pos = -1;
-        nextField();
     }
+    return nextField();
 }
 
 /**
@@ -313,36 +315,9 @@ bool ttt_checkStatus() {
 }
 
 void endTictactoe() {
-    if (winner == 0) drawTie();
-    else drawWon();
+    winner ? drawWon() : drawTie();
     while (!btn_l && !btn_r) {}
     clear();
-}
-
-/**
- * method to finish the game without a winner
- * TODO: remove
- */
-void getTie() {
-    selectField();
-    pos = 1;
-    selectField();
-    pos = 2;
-    selectField();
-    pos = 3;
-    selectField();
-    pos = 5;
-    selectField();
-    pos = 4;
-    selectField();
-    pos = 6;
-    selectField();
-    pos = 8;
-    selectField();
-    pos = 7;
-    selectField();
-    ttt_checkStatus();
-    endTictactoe();
 }
 
 /**
@@ -351,28 +326,26 @@ void getTie() {
 void startTictactoe() {
 
     clear();
+    pos = 8;
+    winner = 0;
+    changePlayer();
+    ttt_running = true;
+
 
     for (int i = 0; i < 9; i++) {
         stateOfField[i] = -1;
     }
 
-    //getTie();
     nextField();
     while (ttt_running) {
-        choosing = true;
-        while (choosing) {
-            if (btn_r) {
-                btn_r = false;
-                nextField();
-            }
-            if (btn_l) {
-                choosing = false;
-                btn_l = false;
-            }
-            //sleep(1);
+        if (btn_r) {
+            nextField();
+            btn_r = false;
         }
-        selectField();
-        ttt_running = ttt_checkStatus();
+        if (btn_l) {
+            ttt_running = selectField();
+            btn_l = false;
+        }
     }
 
     endTictactoe();
