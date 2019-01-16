@@ -1,8 +1,7 @@
-
-#include <stdint.h>
-
 #ifndef LEDTRIX_COLOR_H
 #define LEDTRIX_COLOR_H
+
+#include <stdint.h>
 
 struct color{
     uint8_t red;
