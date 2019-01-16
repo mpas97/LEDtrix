@@ -14,6 +14,7 @@ int main(int argc, char **argv) {
 
     // clear all leds, so the matrix is initialized
     clear();
+    test();
 
     int game = 0;
     bool gaming = true;
@@ -22,20 +23,22 @@ int main(int argc, char **argv) {
 
         bool choosing = true;
 
+
         while (choosing) {
             if (btn_r) {
                 if (++game > 1) game = 0;
                 btn_r = false;
-                switch (game) {
-                    case 0:
-                        ttt_drawImage();
-                        break;
-                    case 1:
-                        rd_drawImage();
-                        break;
-                    default:
-                        break;
-                }
+                clear();
+            }
+            switch (game) {
+                case 0:
+                    ttt_drawImage();
+                    break;
+                case 1:
+                    rd_drawImage();
+                    break;
+                default:
+                    break;
             }
             if (btn_l) {
                 choosing = false;

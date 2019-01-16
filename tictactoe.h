@@ -316,6 +316,7 @@ void endTictactoe() {
     if (winner == 0) drawTie();
     else drawWon();
     while (!btn_l && !btn_r) {}
+    clear();
 }
 
 /**
@@ -349,6 +350,7 @@ void getTie() {
  */
 void startTictactoe() {
 
+    clear();
 
     for (int i = 0; i < 9; i++) {
         stateOfField[i] = -1;

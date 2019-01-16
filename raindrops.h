@@ -170,7 +170,7 @@ void startRaindrops() {
         diff = 0;
         beginning = now;
 
-        while(diff < 3000000) {
+        while(diff < 1500000) {
             if(btn_r){
                 moveRight();
                 btn_r = false;
@@ -191,9 +191,15 @@ void startRaindrops() {
     endRaindrops();
 }
 
-void ttt_drawImage(){
+void rd_drawImage(){
+    setColor(&colorFail, 205, 51, 51);
+    setColor(&colPlayer, 34, 139, 34);
+    setColor(&colorDrop, 47, 79, 79);
+
     player = STRIP / 2 - 1;
     drawPlayer();
+
+
 }
 
 #endif //LEDTRIX_RAINDROPS_H
