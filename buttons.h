@@ -13,6 +13,7 @@
 
 volatile bool btn_l = false;
 volatile bool btn_r = false;
+
 struct timeval last_change_l;
 struct timeval last_change_r;
 

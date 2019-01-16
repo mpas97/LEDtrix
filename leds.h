@@ -61,7 +61,7 @@ void fill(uint8_t red, uint8_t green, uint8_t blue);
 
 void clear();
 
-void test();
+void demo();
 
 void update();
 
@@ -81,7 +81,7 @@ void printButton(int g) {
  *
  * @param leds the matrix
  */
-void test() {
+void demo() {
     clear();
     for (int y = 0; y < STRIP; y++) {
         for (int x = 0; x < STRIP; x++) {

@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
         usleep(HALF_S_IN_U);
         // left for demo mode
         if (getButtonClickLeft()) {
-            test();
+            demo();
         }
         // right for game mode
         if (getButtonClickRight()) {
