@@ -16,6 +16,18 @@ volatile bool btn_r = false;
 struct timeval last_change_l;
 struct timeval last_change_r;
 
+bool getButtonClickLeft() {
+    bool state = btn_l;
+    btn_l = false;
+    return state;
+}
+
+bool getButtonClickRight() {
+    bool state = btn_r;
+    btn_r = false;
+    return state;
+}
+
 void handleLeft() {
     struct timeval now;
     unsigned long diff;
@@ -48,19 +60,19 @@ void handleRight() {
     }
 }
 
-int setupButtons() {
+void setupButtons() {
     wiringPiSetup();
     pinMode(BTNL, INPUT);
     pinMode(BTNR, INPUT);
     pullUpDnControl(BTNL, PUD_UP);
     pullUpDnControl(BTNR, PUD_UP);
     if (wiringPiISR(BTNL, INT_EDGE_FALLING, &handleLeft) < 0) {
-        printf("Unable to setup ISR button left!\n");
-        return 1;
+        printf("ERROR: Unable to setup ISR button left!\n");
+        exit(-1);
     }
     if (wiringPiISR(BTNR, INT_EDGE_FALLING, &handleRight) < 0) {
-        printf("Unable to setup ISR button right!\n");
-        return 1;
+        printf("ERROR: Unable to setup ISR button right!\n");
+        exit(-1);
     }
 }
 

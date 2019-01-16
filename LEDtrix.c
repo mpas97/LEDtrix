@@ -1,10 +1,48 @@
-#include "color.h"
-#include "leds.h"
-#include "buttons.h"
 #include "tictactoe.h"
 #include "raindrops.h"
 
 // compile: gcc LEDtrix.c -o LEDtrix -pthread -lwiringPi
+
+// suppress infinite loop warnings
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
+
+#define HALF_S_IN_U 500000
+
+#define TICTACTOE 0
+#define RAINDROPS 1
+#define NUM_GAMES 2
+
+int game = 0;
+
+void showGamePreview() {
+    clear();
+    switch (game) {
+        case TICTACTOE:
+            ttt_drawImage();
+            break;
+        case RAINDROPS:
+            rd_drawImage();
+            break;
+        default:
+            printf("ERROR: Game preview not found!\n");
+            break;
+    }
+}
+
+void startGame() {
+    switch (game) {
+        case TICTACTOE:
+            startTictactoe();
+            break;
+        case RAINDROPS:
+            startRaindrops();
+            break;
+        default:
+            printf("ERROR: Game not found!\n");
+            break;
+    }
+}
 
 int main(int argc, char **argv) {
 
@@ -14,61 +52,28 @@ int main(int argc, char **argv) {
 
     // clear all leds, so the matrix is initialized
     clear();
-    //test();
 
     while (true) {
-        if (btn_l) {
-            btn_l = false;
+        usleep(HALF_S_IN_U);
+        // left for demo mode
+        if (getButtonClickLeft()) {
             test();
         }
-        if (btn_r) {
-            btn_r = false;
-            int game = 0;
-            bool gaming = true;
-
-            while (gaming) {
-
-                bool choosing = true;
-
-                while (choosing) {
-                    if (btn_r) {
-                        if (++game > 1) game = 0;
-                        btn_r = false;
-                        clear();
+        // right for game mode
+        if (getButtonClickRight()) {
+            do {
+                showGamePreview();
+                do {
+                    usleep(HALF_S_IN_U);
+                    // right will preview next game
+                    if (getButtonClickRight()) {
+                        if (++game >= NUM_GAMES) game = 0;
+                        showGamePreview();
                     }
-                    switch (game) {
-                        case 0:
-                            ttt_drawImage();
-                            break;
-                        case 1:
-                            rd_drawImage();
-                            break;
-                        default:
-                            break;
-                    }
-                    if (btn_l) {
-                        choosing = false;
-                        btn_l = false;
-                    }
-                }
-
-                switch (game) {
-                    case 0:
-                        startTictactoe();
-                        break;
-                    case 1:
-                        startRaindrops();
-                        break;
-                    default:
-                        break;
-                }
-
-                if (btn_r) {
-                    btn_r = false;
-                    gaming = false;
-                }
-                if (btn_l) btn_l = false;
-            }
+                } while (!getButtonClickLeft()); // left will start game
+                startGame();
+                btn_l = false; // exit from game with left, choose game again
+            } while (!getButtonClickRight()); // exit from game with right, choose between demo and game
         }
     }
 
@@ -77,3 +82,4 @@ int main(int argc, char **argv) {
     return 0;
 }
 
+#pragma clang diagnostic pop
