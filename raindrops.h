@@ -22,6 +22,10 @@ void endRaindrops();
 
 void startRaindrops();
 
+void rd_drawImage();
+
+
+
 bool rd_running = true;
 bool raindrops[STRIP][STRIP] = {false};
 int player;
@@ -185,6 +189,11 @@ void startRaindrops() {
     }
 
     endRaindrops();
+}
+
+void ttt_drawImage(){
+    player = STRIP / 2 - 1;
+    drawPlayer();
 }
 
 #endif //LEDTRIX_RAINDROPS_H

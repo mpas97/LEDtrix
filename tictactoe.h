@@ -34,6 +34,8 @@ void endTictactoe();
 
 void startTictactoe();
 
+void ttt_drawImage();
+
 
 bool turnPlayer1 = true;
 bool ttt_running = true;
@@ -373,5 +375,11 @@ void startTictactoe() {
 
     endTictactoe();
 }
+
+void ttt_drawImage(){
+    stateOfField[4] = 1;
+    drawItem(4);
+}
+
 
 #endif //LEDTRIX_TICTACTOE_H

@@ -15,25 +15,53 @@ int main(int argc, char **argv) {
     // clear all leds, so the matrix is initialized
     clear();
 
-    //TODO: Spiel auswählen mit rechtem knopf (=blättern), mit linkem bestätigen.
-    // wenn spiel verloren, zurück zu auswahl (auf diesem Spiel stehen bleiben)
-    if (argc == 2) {
-        if (strcmp("clear", argv[1]) == 0){
-            return 0;
+    int game = 0;
+    bool gaming = true;
+
+    while(gaming) {
+
+        bool choosing = true;
+
+        while (choosing) {
+            if (btn_r) {
+                if (++game > 1) game = 0;
+                btn_r = false;
+                switch (game) {
+                    case 0:
+                        ttt_drawImage();
+                        break;
+                    case 1:
+                        rd_drawImage();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            if (btn_l) {
+                choosing = false;
+                btn_l = false;
+            }
         }
-        if (strcmp("ttt", argv[1]) == 0) {
-            startTictactoe();
-            clear();
-            return 0;
+
+        switch (game) {
+            case 0:
+                startTictactoe();
+                break;
+            case 1:
+                startRaindrops();
+                break;
+            default:
+                break;
         }
-        if (strcmp("rd", argv[1]) == 0) {
-            startRaindrops();
-            clear();
-            return 0;
+
+        if(btn_r){
+            btn_r = false;
+            gaming = false;
         }
+        if(btn_l) btn_l = false;
     }
 
-    test();
+    //TODO: write bye in the middle
 
     return 0;
 }
