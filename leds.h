@@ -9,6 +9,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <pthread.h>
+#include "color.h"
 
 #define BLOCK_SIZE 4096
 #define GPIO_BASE 0x200000
@@ -41,7 +42,7 @@ volatile unsigned *gpio;
 #define GPIO_PULL *(gpio+37) // Pull up/pull down
 #define GPIO_PULLCLK0 *(gpio+38) // Pull up/pull down clock
 
-struct color leds[STRIP][STRIP];
+color leds[STRIP][STRIP];
 uint32_t matrix[SIZE];
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
@@ -49,7 +50,7 @@ void setLed(int pos, uint8_t red, uint8_t green, uint8_t blue);
 
 void setLedsRGB(int xpos, int ypos, uint8_t red, uint8_t green, uint8_t blue);
 
-void setLedsColor(int xpos, int ypos, struct color col);
+void setLedsColor(int xpos, int ypos, color col);
 
 void setup_io();
 
@@ -192,7 +193,7 @@ void setLedsRGB(int xpos, int ypos, uint8_t red, uint8_t green, uint8_t blue) {
  * @param ypos
  * @param col of this led
  */
-void setLedsColor(int xpos, int ypos, struct color col) {
+void setLedsColor(int xpos, int ypos, color col) {
     leds[xpos][ypos] = col;
 }
 

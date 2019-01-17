@@ -2,7 +2,6 @@
 #define LEDTRIX_TICTACTOE_H
 
 #include <stdbool.h>
-#include "color.h" //TODO: remove
 #include "leds.h" //TODO: remove
 #include "buttons.h" //TODO: remove
 
@@ -76,7 +75,7 @@ void drawItem(int pos) {
     int y = getRow(pos);
 
     //choose the color to draw the item in
-    struct color col;
+    color col;
 
     //set the colors for preview, player, oder clearing the field
     switch (stateOfField[pos]) {
@@ -134,7 +133,7 @@ void drawWon() {
     }
     sleep(1);
 
-    struct color col;
+    color col;
     setColor(&col, 225, 30, 30);
 
     //draw W
@@ -188,7 +187,7 @@ void drawTie() {
     }
     sleep(1);
 
-    struct color col;
+    color col;
     setColor(&col, 225, 30, 30);
 
     //draw T

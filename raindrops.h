@@ -2,7 +2,6 @@
 #define LEDTRIX_RAINDROPS_H
 
 #include <stdbool.h>
-#include "color.h" //TODO: remove
 #include "leds.h" //TODO: remove
 #include "buttons.h" //TODO: remove
 
@@ -29,9 +28,9 @@ void rd_drawImage();
 bool rd_running = true;
 bool raindrops[STRIP][STRIP] = {false};
 int player;
-struct color colorFail;
-struct color colPlayer;
-struct color colorDrop;
+color colorFail;
+color colPlayer;
+color colorDrop;
 
 
 /**
@@ -40,7 +39,7 @@ struct color colorDrop;
  * @param color the color of the player
  */
 void drawPlayer() {
-    struct color col;
+    color col;
     col = rd_running? colPlayer : colorFail;
 
     setLedsColor(player, STRIP - 1, col);
@@ -110,7 +109,7 @@ void drawSadFace(){
     int x = 0;
     int y = 0;
 
-    struct color col;
+    color col;
     setColor(&col, 225, 30, 30);
 
     for (int i = STRIP -1; i > 0; i--) {
