@@ -203,7 +203,7 @@ void clear() {
     sendStartFrame();
     for (int y = 0; y < STRIP; y++) {
         for (int x = 0; x < STRIP; x++) {
-            setLedsColor(x, y, white);
+            setLedsColor(x, y, WHITE);
         }
     }
     updateMatrix();

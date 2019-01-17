@@ -86,10 +86,10 @@ void drawItem(int pos) {
             setColor(&col, 40, 255, 40);
             break;
         case 2:
-            setColor(&col, 0, 0, 255);
+            col = BLUE;
             break;
         default:
-            setColor(&col, 0, 0, 0);
+            col = WHITE;
     }
 
     //draws
