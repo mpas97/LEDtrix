@@ -1,9 +1,10 @@
 #ifndef LEDTRIX_BUTTONS_H
 #define LEDTRIX_BUTTONS_H
 
-#include <stdio.h>
-#include <sys/time.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/time.h>
 #include <wiringPi.h>
 
 #define IGNORE_CHANGE_BELOW_USEC 1000000

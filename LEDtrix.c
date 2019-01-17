@@ -1,5 +1,6 @@
-#include "tictactoe.h"
+#include "animations.h"
 #include "raindrops.h"
+#include "tictactoe.h"
 
 // compile: gcc LEDtrix.c -o LEDtrix -pthread -lwiringPi
 

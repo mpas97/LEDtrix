@@ -69,62 +69,6 @@ void updateMatrix();
 
 void *outputThread(uint32_t data[]);
 
-void printButton(int g) {
-    if (GET_GPIO(g)) // !=0 <-> bit is 1 <- port is HIGH=3.3V
-        printf("Button pressed!\n");
-    else // port is LOW=0V
-        printf("Button released!\n");
-}
-
-/**
- * Method for testing if x / y are displayed correct
- *
- * @param leds the matrix
- */
-void demo() {
-    clear();
-    for (int y = 0; y < STRIP; y++) {
-        for (int x = 0; x < STRIP; x++) {
-            leds[x][y].red = 15 * y;
-            leds[x][y].green = 50;
-            leds[x][y].blue = 255 - 15 * y - 1;
-        }
-    }
-    updateMatrix();
-    sleep(3);
-    for (int y = 0; y < STRIP; y++) {
-        for (int x = 0; x < STRIP; x++) {
-            leds[x][y].green = 15 * x;
-            leds[x][y].red = 50;
-            leds[x][y].blue = 255 - 15 * x - 1;
-        }
-    }
-    updateMatrix();
-    sleep(3);
-
-
-    while (1) {
-        clear();
-        for (int y = 0; y < STRIP; y++) {
-            for (int x = 0; x < STRIP; x++) {
-                leds[x][y].red = 15 * y;
-                leds[x][y].green = 50;
-                leds[x][y].blue = 255 - 15 * y - 1;
-                updateMatrix();
-            }
-        }
-        clear();
-        for (int y = 0; y < STRIP; y++) {
-            for (int x = 0; x < STRIP; x++) {
-                leds[x][y].green = 15 * x;
-                leds[x][y].red = 50;
-                leds[x][y].blue = 255 - 15 * x - 1;
-                updateMatrix();
-            }
-        }
-    }
-}
-
 pthread_t current;
 pthread_mutex_t run = PTHREAD_MUTEX_INITIALIZER;
 
@@ -157,7 +101,7 @@ void *outputThread(uint32_t data[]) {
         int led = 0;
         while (1) {
             pthread_mutex_lock(&mutex);
-            for (int pos = 0; pos < BLOCK - 2 ; pos +=4) {
+            for (int pos = 0; pos < BLOCK - 2 ; pos += 4) {
                 sendStartFrame();
                 for (led = 0; led < pos; led++) {
                     send_32_bits(0x80000000, 0x80000000, 0x80000000);
