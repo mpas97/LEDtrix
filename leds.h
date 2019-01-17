@@ -46,7 +46,7 @@ color leds[STRIP][STRIP];
 uint32_t matrix[SIZE];
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void setLed(int pos, uint8_t red, uint8_t green, uint8_t blue);
+void setLed(int pos, color c);
 
 void setLedsRGB(int xpos, int ypos, uint8_t red, uint8_t green, uint8_t blue);
 
@@ -129,31 +129,23 @@ void *outputThread(uint32_t data[]) {
  * @param leds the matrix
  */
 void updateMatrix() {
-    for (int i = 0; i < STRIP; i++) {
+    for (int i = 0, iR = STRIP - 1; i < STRIP; i++, iR--) {
         //(x,y) = (0,0) is upper left corner
-        setLed(i, leds[4][STRIP - i - 1].red, leds[4][STRIP - i - 1].green, leds[4][STRIP - i - 1].blue); //5th strip
-        setLed(i + STRIP, leds[3][i].red, leds[3][i].green, leds[3][i].blue); //4th Strip
-        setLed(i + 2 * STRIP, leds[2][STRIP - i - 1].red, leds[2][STRIP - i - 1].green,
-               leds[2][STRIP - i - 1].blue); //3rd Strip
-        setLed(i + 3 * STRIP, leds[1][i].red, leds[1][i].green, leds[1][i].blue); //2nd Strip
-        setLed(i + 4 * STRIP, leds[0][STRIP - i - 1].red, leds[0][STRIP - i - 1].green,
-               leds[0][STRIP - i - 1].blue); //1st Strip
-        setLed(i + 5 * STRIP, leds[5][STRIP - i - 1].red, leds[5][STRIP - i - 1].green,
-               leds[5][STRIP - i - 1].blue); //6th Strip
-        setLed(i + 6 * STRIP, leds[6][i].red, leds[6][i].green, leds[6][i].blue); //7th Strip
-        setLed(i + 7 * STRIP, leds[7][STRIP - i - 1].red, leds[7][STRIP - i - 1].green,
-               leds[7][STRIP - i - 1].blue); //8th Strip
-        setLed(i + 8 * STRIP, leds[8][i].red, leds[8][i].green, leds[8][i].blue); //9th Strip
-        setLed(i + 9 * STRIP, leds[9][STRIP - i - 1].red, leds[9][STRIP - i - 1].green,
-               leds[9][STRIP - i - 1].blue); //10th Strip
-        setLed(i + 10 * STRIP, leds[10][STRIP - i - 1].red, leds[10][STRIP - i - 1].green,
-               leds[10][STRIP - i - 1].blue); //11th Strip
-        setLed(i + 11 * STRIP, leds[11][i].red, leds[11][i].green, leds[11][i].blue); //12th Strip
-        setLed(i + 12 * STRIP, leds[12][STRIP - i - 1].red, leds[12][STRIP - i - 1].green,
-               leds[12][STRIP - i - 1].blue); //13th Strip
-        setLed(i + 13 * STRIP, leds[13][i].red, leds[13][i].green, leds[13][i].blue); //14th Strip
-        setLed(i + 14 * STRIP, leds[14][STRIP - i - 1].red, leds[14][STRIP - i - 1].green,
-               leds[14][STRIP - i - 1].blue); //15th Strip
+        setLed(i, leds[4][iR]); //5th strip
+        setLed(i + STRIP, leds[3][i]); //4th Strip
+        setLed(i + 2 * STRIP, leds[2][iR]); //3rd Strip
+        setLed(i + 3 * STRIP, leds[1][i]); //2nd Strip
+        setLed(i + 4 * STRIP, leds[0][iR]); //1st Strip
+        setLed(i + 5 * STRIP, leds[5][iR]); //6th Strip
+        setLed(i + 6 * STRIP, leds[6][i]); //7th Strip
+        setLed(i + 7 * STRIP, leds[7][iR]); //8th Strip
+        setLed(i + 8 * STRIP, leds[8][i]); //9th Strip
+        setLed(i + 9 * STRIP, leds[9][iR]); //10th Strip
+        setLed(i + 10 * STRIP, leds[10][iR]); //11th Strip
+        setLed(i + 11 * STRIP, leds[11][i]); //12th Strip
+        setLed(i + 12 * STRIP, leds[12][iR]); //13th Strip
+        setLed(i + 13 * STRIP, leds[13][i]); //14th Strip
+        setLed(i + 14 * STRIP, leds[14][iR]); //15th Strip
     }
     update();
 }
@@ -166,11 +158,11 @@ void updateMatrix() {
  * @param green
  * @param blue
  */
-void setLed(int pos, uint8_t red, uint8_t green, uint8_t blue) {
+void setLed(int pos, color c) {
     matrix[pos] = 0x8F000000;
-    matrix[pos] |= red;
-    matrix[pos] |= green << 8;
-    matrix[pos] |= blue << 16;
+    matrix[pos] |= c.red;
+    matrix[pos] |= c.green << 8;
+    matrix[pos] |= c.blue << 16;
 }
 
 /**
