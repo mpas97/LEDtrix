@@ -60,7 +60,7 @@ void rain() {
             if (raindrops[x][y])
                 setLedsColor(x, y, colorDrop);
             else
-                setLedsRGB(x, y, 0, 0, 0);
+                setLedsColor(x, y, white);
         }
     }
     for (int i = 0; i < STRIP; i++) {
@@ -70,9 +70,9 @@ void rain() {
             setLedsColor(i, 0, colorDrop);
         } else {
             raindrops[i][0] = false;
-            setLedsRGB(i, 0, 0, 0, 0);
+            setLedsColor(i, 0, white);
             raindrops[++i][0] = false;
-            setLedsRGB(i, 0, 0, 0, 0);
+            setLedsColor(i, 0, white);
 
         }
     }
@@ -84,8 +84,8 @@ void rain() {
  */
 void moveLeft() {
     if (player > 0) {
-        setLedsRGB(player + 1, STRIP - 1, 0, 0, 0);
-        setLedsRGB(player + 1, STRIP - 2, 0, 0, 0);
+        setLedsColor(player + 1, STRIP - 1, white);
+        setLedsColor(player + 1, STRIP - 2, white);
         player -= 1;
         rd_checkStatus();
     }
@@ -96,8 +96,8 @@ void moveLeft() {
  */
 void moveRight() {
     if (player < STRIP - 2) {
-        setLedsRGB(player, STRIP - 1, 0, 0, 0);
-        setLedsRGB(player, STRIP - 2, 0, 0, 0);
+        setLedsColor(player, STRIP - 1, white);
+        setLedsColor(player, STRIP - 2, white);
         player += 1;
         rd_checkStatus();
     }

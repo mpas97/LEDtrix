@@ -48,8 +48,6 @@ pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void setLed(int pos, color c);
 
-void setLedsRGB(int xpos, int ypos, uint8_t red, uint8_t green, uint8_t blue);
-
 void setLedsColor(int xpos, int ypos, color col);
 
 void setup_io();
@@ -58,7 +56,7 @@ void sendStartFrame();
 
 void send_32_bits(uint32_t val1, uint32_t val2, uint32_t val3);
 
-void fill(uint8_t red, uint8_t green, uint8_t blue);
+void fill(color col);
 
 void clear();
 
@@ -166,20 +164,6 @@ void setLed(int pos, color c) {
 }
 
 /**
-* Set the Color of the led on this position (x/y).
-* @param xpos
-* @param ypos
-* @param red value
-* @param green value
-* @param blue value
-*/
-void setLedsRGB(int xpos, int ypos, uint8_t red, uint8_t green, uint8_t blue) {
-    leds[xpos][ypos].red = red;
-    leds[xpos][ypos].green = green;
-    leds[xpos][ypos].blue = blue;
-}
-
-/**
  * Set the Color of the led on this position (x/y).
  * @param xpos
  * @param ypos
@@ -199,11 +183,11 @@ void setLedsColor(int xpos, int ypos, color col) {
  * @param blue
  * @param leds the matrix
  */
-void fill(uint8_t red, uint8_t green, uint8_t blue) {
+void fill(color col) {
     sendStartFrame();
     for (int y = 0; y < STRIP; y++) {
         for (int x = 0; x < STRIP; x++) {
-            setLedsRGB(x, y, red, green, blue);
+            setLedsColor(x, y, col);
         }
     }
     updateMatrix();
@@ -219,7 +203,7 @@ void clear() {
     sendStartFrame();
     for (int y = 0; y < STRIP; y++) {
         for (int x = 0; x < STRIP; x++) {
-            setLedsRGB(x, y, 0, 0, 0);
+            setLedsColor(x, y, white);
         }
     }
     updateMatrix();
