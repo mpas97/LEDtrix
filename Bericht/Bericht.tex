@@ -52,9 +52,14 @@
  
  \section{Background}
  
- The idea for our project came by coffee tables containing a LED's Matrix. We liked this and thought of a way to produce something similar, but easier to transport.
+ The idea for our project came by coffee tables containing a LED's Matrix.
+ We liked this and thought of a way to produce something similar, but easier to transport.
  It needed to be robust for which reason we came up with the idea of a wooden box.
- W
+ Then, we needed make up our mind about how to control the games.
+ We thought about touch pads, but left this idea go very quickly, seeing as we want to create a vintage feeling.
+ This is when we came up with the idea of two buttons.
+ This way, we could keep the game logic very simple and concentrate on the more important and interesting parts of our project.
+ this was all the information we needed to get started.
  
  \textbf{Introduce and compare relevant technologies, protocols,
 algorithms,..}
@@ -102,13 +107,30 @@ After that we had to solder the strips together.
   \\}
  \vspace{1cm}
  
-\section{Programming}
- We decided on having bools for both buttons, so when a button is pushed, the bool is set to true, and after the information is used, it is set to false.
- This way, we are able to react on the push not by complex switch cases in the button handler, but wherever in the code they are needed.
+\section{Coding}
+Before we built the box, both of us started to try different things on the LED's.
+ We needed to know how exactly they work and what information we needed to send to display information correctly.
+ This could have been very difficult and time consuming, but luckily we came to the correct conclusions really fast. 
+ We also learned that  the LED's needed so much energy, that we could only have twelve of them blinking at once.
+ For this reason we have three blocks of each five strips instead of just one big block.
+ In each of the blocks four LED's are flickering at once, so first the first four, the the next four and so on.
+ This happens very fast, for this reason it looks like all of the 225 LED's would be shining at once.
+
+After the hardware part was finished, we started programming a demo and each of us a game.
+ Since we had no working buttons yet, both of the games had a demo mode which was showed on the LED's .
+
+We thought that with this done, and only the buttons left, the biggest part of the project would have been done.
+ But in fact, it was not.
+ The problems we described in the Introduction came to mind only when we started to work with the buttons.
+ \texbf{ On code level ???
+ We before have written comments in our games, telling us what should happen if a button is pressed.
+ We decided on having Boolean values for both buttons, so when a button is pushed, the Boolean is set to true, and after the information is used, it is set to false.
+ Consequently, we are able to react on the push not by complex switch cases in the button handler, but wherever in the code they are needed.}
  
  
-Implementation, Configuration and Setup (conceptional, no description
-on code-level and no code)
+ 
+\textbf{Implementation, Configuration and Setup (conceptional, no description
+on code-level and no code)}
 
 \section{Results}
 Graphics, tables, comparisons, insights..
