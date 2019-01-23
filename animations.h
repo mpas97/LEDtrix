@@ -75,4 +75,49 @@ void demo() {
     }
 }
 
+void drawSmile() {
+    clear();
+    color col = {28, 250, 73};
+
+
+    //draw the circle
+    for (int i = 0; i < 5; i++) {
+        setLedsColor(i + 5, 0, col);
+        setLedsColor(10 + i, i, col);
+        setLedsColor(STRIP - 1, i + 5, col);
+        setLedsColor(STRIP - 1 - i, 10 + i, col);
+        setLedsColor(i + 5, STRIP - 1, col);
+        setLedsColor(4 - i, STRIP - 1 - i, col);
+        setLedsColor(0, i + 5, col);
+        setLedsColor(i, 4 - i, col);
+    }
+
+    //draw Eyes
+    int y = 3;
+    int x1 = 5;
+    int x2 = 8;
+    for (int i = 0; i < 4; i++) {
+        setLedsColor(x1, y + i, col);
+        setLedsColor(x1 + 1, y + i, col);
+        setLedsColor(x2, y + i, col);
+        setLedsColor(x2 + 1, y + i, col);
+
+    }
+
+    for (int i = 0; i < 2; i++) {
+        setLedsColor(4, 9 + i, col);
+        setLedsColor(5, 9 + i, col);
+        setLedsColor(6, 11 + i, col);
+        setLedsColor(7, 11 + i, col);
+        setLedsColor(8, 11 + i, col);
+        setLedsColor(9, 9 + i, col);
+        setLedsColor(10, 9 + i, col);
+    }
+
+    setLedsColor(6, 11, col);
+    setLedsColor(9, 11, col);
+
+    updateMatrix();
+}
+
 #endif //LEDTRIX_ANIMATIONS_H
