@@ -8,8 +8,6 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
 
-#define HALF_S_IN_U 500000
-
 #define TICTACTOE 0
 #define RAINDROPS 1
 #define NUM_GAMES 2

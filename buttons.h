@@ -7,7 +7,8 @@
 #include <sys/time.h>
 #include <wiringPi.h>
 
-#define IGNORE_CHANGE_BELOW_USEC 1000000
+#define HALF_S_IN_U 500000
+#define S_IN_U      1000000
 #define BTNL 25
 #define BTNR 27
 
@@ -37,10 +38,10 @@ void handleLeft() {
     gettimeofday(&now, NULL);
 
     // Time difference in usec
-    diff = (now.tv_sec * 1000000 + now.tv_usec) - (last_change_l.tv_sec * 1000000 + last_change_l.tv_usec);
+    diff = (now.tv_sec * S_IN_U + now.tv_usec) - (last_change_l.tv_sec * S_IN_U + last_change_l.tv_usec);
 
     // Filter jitter
-    if (diff > IGNORE_CHANGE_BELOW_USEC) {
+    if (diff > S_IN_U) {
         btn_l = true;
         last_change_l = now;
     }
@@ -53,10 +54,10 @@ void handleRight() {
     gettimeofday(&now, NULL);
 
     // Time difference in usec
-    diff = (now.tv_sec * 1000000 + now.tv_usec) - (last_change_r.tv_sec * 1000000 + last_change_r.tv_usec);
+    diff = (now.tv_sec * S_IN_U + now.tv_usec) - (last_change_r.tv_sec * S_IN_U + last_change_r.tv_usec);
 
     // Filter jitter
-    if (diff > IGNORE_CHANGE_BELOW_USEC) {
+    if (diff > S_IN_U) {
         btn_r = true;
         last_change_r = now;
     }
