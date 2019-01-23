@@ -2,8 +2,9 @@
 #define LEDTRIX_RAINDROPS_H
 
 #include <stdbool.h>
-#include "leds.h" //TODO: remove
-#include "buttons.h" //TODO: remove
+#include "leds.h"
+#include "buttons.h"
+#include "chars.h"
 
 void drawPlayer();
 
@@ -17,6 +18,8 @@ void drawSadFace();
 
 void rd_checkStatus();
 
+void emptyRaindrops();
+
 void endRaindrops();
 
 void startRaindrops();
@@ -26,6 +29,7 @@ void rd_drawImage();
 
 bool rd_running = true;
 bool raindrops[STRIP][STRIP] = {false};
+int score;
 int player;
 color colorFail;
 color colPlayer;
@@ -75,6 +79,7 @@ void rain() {
 
         }
     }
+    score++;
     rd_checkStatus();
 }
 
@@ -102,21 +107,29 @@ void moveRight() {
     }
 }
 
-void drawSadFace() {
+void drawScore() {
     clear();
+    int character[5][5];
+    int bx = 2;
+    int by = 2;
 
-    int x = 0;
-    int y = 0;
-
-    color col;
-    setColor(&col, 225, 30, 30);
-
-    for (int i = STRIP - 1; i > 0; i--) {
-        setLedsColor(x, y + i, col);
-        setLedsColor(x + STRIP - 1, y + i, col);
-        setLedsColor(x + i, y, col);
-        setLedsColor(x + i, y + STRIP - 1, col);
-    }
+    do {
+        //draw last digit
+        if (getChar(character, score % 10)) {
+            for (int y = 0; y < 5; y++) {
+                for (int x = 0; x < 5; x++) {
+                    if (character[y][x]) leds[x + bx * 5][y + by * 5].blue = 255;
+                }
+            }
+            updateMatrix();
+        }
+        //remove last digit
+        score /= 10;
+        if(--bx < 0){
+            by --;
+            bx = 2;
+        }
+    } while (!score && by >= 0);
 
     updateMatrix();
 }
@@ -138,11 +151,21 @@ void rd_checkStatus() {
     }
 }
 
+void emptyRaindrops() {
+    for (int y = 0; y < STRIP; y++) {
+        for (int x = 0; x < STRIP; x++) {
+            raindrops[x][y] = false;
+        }
+    }
+    rd_checkStatus();
+}
+
 /**
  * What should happen if the player loses (gets hit by a raindrop)
  */
 void endRaindrops() {
     drawSadFace();
+    drawScore();
     while (!btn_l && !btn_r) {}
 }
 
@@ -154,6 +177,8 @@ void startRaindrops() {
     setColor(&colPlayer, 34, 139, 34);
     setColor(&colorDrop, 47, 79, 79);
 
+    emptyRaindrops();
+    score = 0;
     player = STRIP / 2 - 1;
     drawPlayer();
 
@@ -182,7 +207,8 @@ void startRaindrops() {
             diff = (now.tv_sec * 1000000 + now.tv_usec) - (beginning.tv_sec * 1000000 + beginning.tv_usec);
         }
 
-        rain();
+        if (rd_running)
+            rain();
     }
 
     endRaindrops();
@@ -193,10 +219,13 @@ void rd_drawImage() {
     setColor(&colPlayer, 34, 139, 34);
     setColor(&colorDrop, 47, 79, 79);
 
+    emptyRaindrops();
     player = STRIP / 2 - 1;
     drawPlayer();
 
-
+    for (int i = 0; i < 5; ++i) {
+        rain();
+    }
 }
 
 #endif //LEDTRIX_RAINDROPS_H
