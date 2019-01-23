@@ -24,7 +24,6 @@ void startRaindrops();
 void rd_drawImage();
 
 
-
 bool rd_running = true;
 bool raindrops[STRIP][STRIP] = {false};
 int player;
@@ -40,7 +39,7 @@ color colorDrop;
  */
 void drawPlayer() {
     color col;
-    col = rd_running? colPlayer : colorFail;
+    col = rd_running ? colPlayer : colorFail;
 
     setLedsColor(player, STRIP - 1, col);
     setLedsColor(player + 1, STRIP - 1, col);
@@ -103,7 +102,7 @@ void moveRight() {
     }
 }
 
-void drawSadFace(){
+void drawSadFace() {
     clear();
 
     int x = 0;
@@ -112,11 +111,11 @@ void drawSadFace(){
     color col;
     setColor(&col, 225, 30, 30);
 
-    for (int i = STRIP -1; i > 0; i--) {
+    for (int i = STRIP - 1; i > 0; i--) {
         setLedsColor(x, y + i, col);
-        setLedsColor(x + STRIP-1, y + i, col);
+        setLedsColor(x + STRIP - 1, y + i, col);
         setLedsColor(x + i, y, col);
-        setLedsColor(x + i, y + STRIP-1, col);
+        setLedsColor(x + i, y + STRIP - 1, col);
     }
 
     updateMatrix();
@@ -126,14 +125,13 @@ void drawSadFace(){
  * Control the position of the player using his upper left position.
  */
 void rd_checkStatus() {
-    if(rd_running) {
+    if (rd_running) {
         if (raindrops[player][STRIP - 1] || raindrops[player + 1][STRIP - 1] ||
             raindrops[player][STRIP - 2] || raindrops[player + 1][STRIP - 2]) {
             rd_running = false;
             drawPlayer();
             sleep(1);
-        }
-        else {
+        } else {
             rd_running = true;
             drawPlayer();
         }
@@ -169,12 +167,12 @@ void startRaindrops() {
         diff = 0;
         beginning = now;
 
-        while(diff < 1500000) {
-            if(btn_r){
+        while (diff < 1500000) {
+            if (btn_r) {
                 moveRight();
                 btn_r = false;
             }
-            if(btn_l){
+            if (btn_l) {
                 moveLeft();
                 btn_l = false;
             }
@@ -190,7 +188,7 @@ void startRaindrops() {
     endRaindrops();
 }
 
-void rd_drawImage(){
+void rd_drawImage() {
     setColor(&colorFail, 205, 51, 51);
     setColor(&colPlayer, 34, 139, 34);
     setColor(&colorDrop, 47, 79, 79);
