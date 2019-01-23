@@ -73,6 +73,22 @@ void demo() {
             }
         }
     }
+
+    //fill Diagonal
+    for (int i = 1; i < STRIP + 1; i++) {
+        for (int j = 0; j < i; j++) {
+            leds[j][i - j].red = 105 - j;
+            leds[j][i - j].blue = 5 * j;
+            leds[j][i - j].green = 105 - i;
+            leds[STRIP - j][STRIP - i + j].red = 105 - j;
+            leds[STRIP - j][STRIP - i + j].blue = 5 * j;
+            leds[STRIP - j][STRIP - i + j].green = 105 - i;
+        }
+    }
+    updateMatrix();
+    sleep(10);
+
+
 }
 
 void drawSmile() {
