@@ -44,8 +44,7 @@
  Our aim is to have at least two games, and code which is expandable so one may easily add a new game.
  The problem will be to efficiently calculate the game-logic, whilst updating the LED's continuously.
  If we do not get this right, the LED's will flicker and therefor worsen the gaming experience.
- Moreover, our buttons are very imprecise, as a result we can not use an interrupt handler on them, but need to demand frequently, whether one has been pushed.
- Besides, depending on where in the gaming process one is, we need to react very differently to the buttons being pressed.
+ 
  This may lead to more flickering, consequently we have to look for a good solution.
  
 \textbf{Introduction to the topic with a problem statement and questions to examine}
@@ -59,7 +58,10 @@
  We thought about touch pads, but left this idea go very quickly, seeing as we want to create a vintage feeling.
  This is when we came up with the idea of two buttons.
  This way, we could keep the game logic very simple and concentrate on the more important and interesting parts of our project.
- this was all the information we needed to get started.
+ 
+ Seeing as we both had no experience with soldering, especially as it would have taken all of the available project time, we decided on using LED-strips instead of 225 separate LED's, which were also less expensive.
+ We took the APA-102 strips because they have a clock included.
+ It would have been impossible to program this on the RaspberryPi.
  
  \textbf{Introduce and compare relevant technologies, protocols,
 algorithms,..}
@@ -110,23 +112,28 @@ After that we had to solder the strips together.
 \section{Coding}
 Before we built the box, both of us started to try different things on the LED's.
  We needed to know how exactly they work and what information we needed to send to display information correctly.
- This could have been very difficult and time consuming, but luckily we came to the correct conclusions really fast. 
+ This could have been very difficult and time consuming, but luckily we came to the correct conclusions really fast.
  We also learned that  the LED's needed so much energy, that we could only have twelve of them blinking at once.
  For this reason we have three blocks of each five strips instead of just one big block.
+ 
+ Another reason for splitting it up, was that 7.5 meters were too long to transport the data efficiently.
  In each of the blocks four LED's are flickering at once, so first the first four, the the next four and so on.
  This happens very fast, for this reason it looks like all of the 225 LED's would be shining at once.
  The first result we had was very disappointing, as the LED's flickered very much, and the colors were inconsistent.
  By spending some time working on it, we made our code more and more efficient, which led to the satisfying result we now have.
+ One big change was replacing the wiringPi library with direct memory access, therefore the data could be passed to the strips with less overhead.
 
 After the hardware part was finished, we started programming a demo and each of us a game.
  Since we had no working buttons yet, both of the games had a demo mode which was showed on the LED's.
 
 We thought that with this done, and only the buttons left, the biggest part of the project would have been done.
  But in fact, it was not.
- Some of he problems we described in the Introduction came to mind only when we started to work with the buttons.
- \textbf{ On code level ??? 
- We have written comments in our games, telling us what should happen if a button is pressed.
- We decided on having Boolean values for both buttons, so when a button is pushed, the Boolean is set to true, and after the information is used, it is set to false.
+ Our buttons are very imprecise, in fact one click triggers multiple interrupts.
+ This is an unusable behavior, as for example while playing Raindrops, one might only go one step to the left and dies, if one push leads to three steps.
+ to avoid this, we introduced a timer minimizing the amount of clicks to respond to during a certain interval.
+ 
+ Besides, depending on where in the gaming process one is, we need to react very differently to the buttons being pressed.
+ \textbf{We solved this by having Boolean values for both buttons, so when a button is pushed, the Boolean is set to true, and after the information is used, it is set to false.
  Consequently, we are able to react on the push not by complex switch cases in the button handler, but wherever in the code they are needed.}
  
  
@@ -138,9 +145,16 @@ on code-level and no code)}
 \textbf{Graphics, tables, comparisons, insights..}
 
 \section{Conclusion}
+First of all, we are happy our project idea could be accomplished.
+ The games are fun to play and look nice, with almost no flickering anymore.
 
-One important lesson we learned was, that we should have started writing this report earlier than we did.
- It would have been good to write down decisions and important bugs we removed right away, since we forgot about some of them.
+We developed in the Code-and-Fix model, for this reason we had a lot of refactoring, and trying things which didn't work.
+ If we would have made some brainstorming in the beginning, probably we would have found a more generic solution.
+ 
+ In addition, due to both of use writing one game and not talking about the structure before, they were not similar.
+ When we joined them and the LED's, we had to refactor a lot of things to have inherent code.
+
+Furthermore we should gave taken some notes about decisions and important bugs we removed during the process, since we forgot about some of them.
  When starting the report, we had to think a lot about what we made and why, so we could write it down, which took a lot of time.
 
 \textbf{Discussion/Conclusion/Lessons learned}
