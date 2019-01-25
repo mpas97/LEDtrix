@@ -207,7 +207,6 @@ void clear() {
         }
     }
     updateMatrix();
-    sleep(1);
 }
 
 /**

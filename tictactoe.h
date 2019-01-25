@@ -350,7 +350,13 @@ void startTictactoe() {
     endTictactoe();
 }
 
-void ttt_drawImage(){
+void ttt_drawImage() {
+    for (int i = 0; i < STRIP; i++) {
+        setLedsColor(0, i, BLUE);
+        setLedsColor(i, 0, BLUE);
+        setLedsColor(STRIP-1, i, BLUE);
+        setLedsColor(i, STRIP-1, BLUE);
+    }
     stateOfField[4] = 1;
     drawItem(4);
 }

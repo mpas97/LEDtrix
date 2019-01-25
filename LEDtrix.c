@@ -76,8 +76,6 @@ int main(int argc, char **argv) {
         }
     }
 
-    //TODO: write bye in the middle
-
     return 0;
 }
 
