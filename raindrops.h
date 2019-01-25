@@ -159,6 +159,7 @@ void emptyRaindrops() {
 void endRaindrops() {
     drawScore();
     while (!btn_l && !btn_r) {}
+    clear();
 }
 
 /**

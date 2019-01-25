@@ -1,6 +1,7 @@
 #include "animations.h"
 #include "raindrops.h"
 #include "tictactoe.h"
+#include "snake.h"
 
 // compile: gcc LEDtrix.c -o LEDtrix -pthread -lwiringPi
 
@@ -10,7 +11,8 @@
 
 #define TICTACTOE 0
 #define RAINDROPS 1
-#define NUM_GAMES 2
+#define SNAKE     2
+#define NUM_GAMES 3
 
 int game = 0;
 
@@ -22,6 +24,9 @@ void showGamePreview() {
             break;
         case RAINDROPS:
             rd_drawImage();
+            break;
+        case SNAKE:
+            snake_drawImage();
             break;
         default:
             printf("ERROR: Game preview not found!\n");
@@ -36,6 +41,9 @@ void startGame() {
             break;
         case RAINDROPS:
             startRaindrops();
+            break;
+        case SNAKE:
+            startSnake();
             break;
         default:
             printf("ERROR: Game not found!\n");
