@@ -40,38 +40,31 @@
  
  \section{Introduction}
  
- The LEDtrix is a square LED's matrix inside a box made of wood, connected to RaspberryPi as well as to buttons, to play some games on.
- Our aim is to have at least two games, and code which is expandable so one may easily add a new game.
- The problem will be to efficiently calculate the game-logic, whilst updating the LED's continuously.
- If we do not get this right, the LED's will flicker and therefor worsen the gaming experience.
- 
- This may lead to more flickering, consequently we have to look for a good solution.
- 
-\textbf{Introduction to the topic with a problem statement and questions to examine}
+ LEDtrix is a square LED matrix encased by a box made of wood. A connected RaspberryPi with two buttons are controlling the system, allowing users to play some games on the board.
+ Our aim is to assemble all parts, to have at least two running games and an easy expandable code, so adding a new game can be done quickly.
+ We think that updating the pixels continuously whilst calculating the game logic, could be a challenging task to master.
+ Not accomplishing the last point would result in flickering LEDs and therefore drastically worsen the gaming experience.
+ Due to this importance it must be well thought out so that a desired result can be achieved.
  
  \section{Background}
  
- The idea for our project came by coffee tables containing a LED's Matrix.
- We liked this and thought of a way to produce something similar, but easier to transport.
- It needed to be robust for which reason we came up with the idea of a wooden box.
- Then, we needed make up our mind about how to control the games.
- We thought about touch pads, but left this idea go very quickly, seeing as we want to create a vintage feeling.
- This is when we came up with the idea of two buttons.
- This way, we could keep the game logic very simple and concentrate on the more important and interesting parts of our project.
+ The idea for our project came by coffee tables containing LED matrices.
+ We liked this idea and thought of a way to produce something similar, being easier to transport.
+ Since the product must be able to withstand displacements, the decision to produce a wooden frame for protection was made quickly.
+ Then, we had to think about how to control the games.
+ After a quick evaluation of touch pads, we suddenly came up with the concept of adding two buttons.
+ With this approach, we could keep the game logic as simple as possible, concentrating on the more important and interesting parts of the project.
  
- Seeing as we both had no experience with soldering, especially as it would have taken all of the available project time, we decided on using LED-strips instead of 225 separate LED's, which were also less expensive.
- We took the APA-102 strips because they have a clock included.
- It would have been impossible to program this on the RaspberryPi.
- 
- \textbf{Introduce and compare relevant technologies, protocols,
-algorithms,..}
+ Seeing that we both had no experience with soldering, especially as it would have taken all of the available project time, we decided on using LED strips instead of 225 separate ones.
+ After looking up the major differences between some models, we found out that we are going to need some APA102 which have a clock line additionaly compared to the WS2812 edition.
+ Without knowing this, we would have run into serious problems. Transfering data to the leds in very small and exactly defined time slots is not possible with software running on top of a non real-time operating system.
 
-\section{Building the Box}
-We began by building the box, continued by fixating the LED strips and soldering them together.
- Our first problems arouse, when we tried to splice the wooden parts of our box.
- We went to the switch gear workshop of the Elektrizitäts AG Basel to do so, where we realised that this would be very unstable.
- The employees helped us to build the box stronger, by screwing the pieces together, instead of using glue.
- The pictures below show one of the employees helping us to saw the wood (left), and one of us drilling a screw hole into a metal plate, which belongs into one of the corners of the box (right).
+\section{Building the box}
+ We began by building the box, continued by fixating the LED strips and soldering them together.
+ Our first problems arose when we tried to splice the wooden slats.
+ We therefore went to the switchgear workshop of Elektrizitäts AG Basel, where we realised that this would be very unstable.
+ The employees helped us build a stronger box by screwing the pieces together instead of using glue.
+ The pictures below show one of the employees helping us to saw the wood (left) and one of us drilling a screw hole into a metal plate which will then strengthen one of the four box corners (right).
  
 \vspace{1cm}
 
@@ -82,8 +75,8 @@ We began by building the box, continued by fixating the LED strips and soldering
   \\}
  \vspace{1cm}
  
-After one day of handicraft work our box was finished, and we ended the day by spraying the outer-wall bright red, what you can see on the picture below (left).
- So the next thing we had to do was to stick the strips onto a wooden board, which you can see us doing so on the picture on the right.
+After one day of handicraft work, our box was finished and we ended the day by spraying the outer wall bright red. This can be seen in the picture on the left below.
+ Next we had to glue the strips on a wooden board, which you can see in the picture on the right.
  
  \vspace{1cm}
 
@@ -94,11 +87,12 @@ After one day of handicraft work our box was finished, and we ended the day by s
   \\}
  \vspace{1cm}
  
-After that we had to solder the strips together.
- Since none of us had any experience with soldering, we were surprised how nice it looked and that all of the LED strips were connected and working correctly after the first try.
- Below you see a picture of one of us soldering (left), and the finished LED's board.
- In the beginning we thought about glueing some paper walls between the LED's board and the acrylic glass above it, so we'd have a square for each LED.
- But when we tried it, we both felt it looked nicer without the paper walls, and with no space between the board and the glass, so we did not do that.
+Furthermore, we had to solder the strips together.
+ Since none of us had any experience with soldering, we were surprised how nice it looked and that all of the LED strips were working correctly after the first try.
+ Below you see a picture of one of us soldering (left) and the finished LED board (right).
+ In the beginning we thought about adding paper walls between each LED, to get exact light squares per diode.
+ As soon as we tried it, we both had the feeling that it looked nicer without these walls, why we left them out.
+ As for the distance between the acrylic glass and the light board, we decided to place them directly on top of each other.
  
  \vspace{1cm}
 
@@ -110,54 +104,40 @@ After that we had to solder the strips together.
  \vspace{1cm}
  
 \section{Coding}
-Before we built the box, both of us started to try different things on the LED's.
- We needed to know how exactly they work and what information we needed to send to display information correctly.
+Before we built the box, both of us started to try different things on the LEDs.
+ We had to know exactly how they work and what order of information they expect, so they would display the desired colors at the right places.
  This could have been very difficult and time consuming, but luckily we came to the correct conclusions really fast.
- We also learned that  the LED's needed so much energy, that we could only have twelve of them blinking at once.
- For this reason we have three blocks of each five strips instead of just one big block.
+ We also had to conclude that the LEDs are consuming too much energy for activating them all together.
+ For this reason we chose to have three blocks of five strips each, in order to have only twelve bulbs blinking at once.
  
- Another reason for splitting it up, was that 7.5 meters were too long to transport the data efficiently.
- In each of the blocks four LED's are flickering at once, so first the first four, the the next four and so on.
- This happens very fast, for this reason it looks like all of the 225 LED's would be shining at once.
- The first result we had was very disappointing, as the LED's flickered very much, and the colors were inconsistent.
- By spending some time working on it, we made our code more and more efficient, which led to the satisfying result we now have.
- One big change was replacing the wiringPi library with direct memory access, therefore the data could be passed to the strips with less overhead.
+ Another reason for splitting it up was that 7.5 meters were too long to transport the data fast enough.
+ In each of the blocks only four LEDs are shining at once. Beginning with the first four, then the next four and so on.
+ Because this happens very quickly, it looks like all of the 225 LEDs would be shining at once.
+ The first result we had was very disappointing, as the LEDs flickered very much and the colors were inconsistent.
+ By spending some time working on it, we made our code more efficient and reliable, which led to the satisfying result we got at the end.
+ One big change was the replacement of the wiringPi library with direct gpio memory mapping, therefore the data could be passed to the strips with less overhead.
 
-After the hardware part was finished, we started programming a demo and each of us a game.
- Since we had no working buttons yet, both of the games had a demo mode which was showed on the LED's.
+After the hardware part was finished and the leds could be managed, we started programming a demo and each of us a game.
+ Since we had no working buttons yet, both of the games had a demo mode which was showed on the board.
 
-We thought that with this done, and only the buttons left, the biggest part of the project would have been done.
+We thought that with this done and only the buttons left, the biggest part of the project would have been done.
  But in fact, it was not.
  Our buttons are very imprecise, in fact one click triggers multiple interrupts.
- This is an unusable behavior, as for example while playing Raindrops, one might only go one step to the left and dies, if one push leads to three steps.
- to avoid this, we introduced a timer minimizing the amount of clicks to respond to during a certain interval.
- 
- Besides, depending on where in the gaming process one is, we need to react very differently to the buttons being pressed.
- \textbf{We solved this by having Boolean values for both buttons, so when a button is pushed, the Boolean is set to true, and after the information is used, it is set to false.
- Consequently, we are able to react on the push not by complex switch cases in the button handler, but wherever in the code they are needed.}
- 
- 
- 
-\textbf{Implementation, Configuration and Setup (conceptional, no description
-on code-level and no code)}
-
-\section{Results}
-\textbf{Graphics, tables, comparisons, insights..}
+ This is an unusable behavior, as for example while playing Raindrops, one might want to go one step to the left only but dies because one push leads to three steps.
+ To avoid this, we introduced a timer minimizing the amount of clicks we are responding to during a certain interval.
 
 \section{Conclusion}
-First of all, we are happy our project idea could be accomplished.
- The games are fun to play and look nice, with almost no flickering anymore.
+First of all, we are happy that our project idea worked out and that our goals have been achieved within the given time frame.
+ The games are fun to play, nice designed and with almost no flickering anymore the box provides a good gaming experience.
 
-We developed in the Code-and-Fix model, for this reason we had a lot of refactoring, and trying things which didn't work.
- If we would have made some brainstorming in the beginning, probably we would have found a more generic solution.
+We developed in the Code-and-Fix model, for which reason we had a lot of refactoring and did things that didn't work with the first approach.
+ If we would have made more brainstorming in the beginning, probably we would have found a more generic solution.
  
- In addition, due to both of use writing one game and not talking about the structure before, they were not similar.
- When we joined them and the LED's, we had to refactor a lot of things to have inherent code.
+ In addition, because both of us were writing one game and we did not talk about a common structure before, they were not similar.
+ When we put them together, we had to refactor a lot of things to have inherent code.
 
-Furthermore we should gave taken some notes about decisions and important bugs we removed during the process, since we forgot about some of them.
- When starting the report, we had to think a lot about what we made and why, so we could write it down, which took a lot of time.
-
-\textbf{Discussion/Conclusion/Lessons learned}
+Furthermore, we should have taken some notes about decisions and important bugs we removed during the process, since we forgot about some of them.
+ When starting with the report, we had to think a lot about what we did and why, so we couldn't write this down directly, which took us a lot of time.
 
 \section{References}
 
