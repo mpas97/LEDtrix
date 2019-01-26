@@ -83,7 +83,6 @@ void startSnake() {
     head = malloc(sizeof(body));
     head->parent = NULL;
     head->x = head->y = STRIP/2;
-    head->parent = NULL;
     tail = head;
     for (int i = 1; i <= 10; i++) {
         if (move()) break;
@@ -103,7 +102,7 @@ void startSnake() {
         updateMatrix();
         usleep(HALF_S_IN_U);
     }
-    printf("score: %d\n", size);
+
     while (tail != head) {
         body *oldTail = tail;
         tail = tail->parent;
